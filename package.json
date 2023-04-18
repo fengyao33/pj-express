@@ -1,0 +1,33 @@
+{
+  "name": "newproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsc-watch --onSuccess \"node build/index\"",
+    "clean": "rm -rf build",
+    "build": "tsc",
+    "start": "node build",
+    "prettier:fix": "prettier --config .prettierrc.json --write src/**/**/*.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "app-root-path": "^3.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "dotenv-parse-variables": "^2.0.0",
+    "express-validator": "^7.0.1",
+    "helmet": "^6.1.5",
+    "module-alias": "^2.2.2",
+    "morgan": "^1.10.0",
+    "rate-limiter-flexible": "^2.4.1",
+    "tsc-watch": "^6.0.0",
+    "winston": "^3.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11"
+  }
+}
