@@ -3,18 +3,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-require("./alias");
-const express_1 = __importDefault(require("express"));
-const morgan_1 = __importDefault(require("morgan"));
 const cors_1 = __importDefault(require("cors"));
+const express_1 = __importDefault(require("express"));
 const helmet_1 = __importDefault(require("helmet"));
-const rate_limiter_1 = require("./middlewares/rate_limiter");
-const error_handler_1 = require("./middlewares/error_handler");
+const morgan_1 = __importDefault(require("morgan"));
+require("./alias");
 const logger_1 = __importDefault(require("./helpers/logger"));
+const error_handler_1 = require("./middlewares/error_handler");
+const rate_limiter_1 = require("./middlewares/rate_limiter");
 //importing routes
 const router_1 = __importDefault(require("./router"));
 //importing configs
 const settings_1 = require("./config/settings");
+require("./connection/mongoDB");
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
