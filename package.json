@@ -11,6 +11,9 @@
     "start": "node build",
     "prettier:fix": "prettier --config .prettierrc.json --write src/**/**/*.ts"
   },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -24,8 +27,10 @@
     "express-validator": "^7.0.1",
     "helmet": "^6.1.5",
     "module-alias": "^2.2.2",
+    "mongoose": "^7.0.5",
     "morgan": "^1.10.0",
     "node": "^19.8.1",
+    "node-express-cli": "^2.5.1",
     "rate-limiter-flexible": "^2.4.1",
     "tsc-watch": "^6.0.0",
     "winston": "^3.8.2"
