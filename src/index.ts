@@ -4,7 +4,7 @@ import helmet from 'helmet'
 import morgan from 'morgan'
 import './alias'
 import logger from './helpers/logger'
-import { handleErrorMiddleware } from './middlewares/error_handler'
+import { handleCatchError, handleError404Middleware, handleErrorMiddleware } from './middlewares/error_handler'
 import { rateLimiterMiddleware } from './middlewares/rate_limiter'
 
 //importing routes
@@ -39,6 +39,8 @@ class Server {
   routes() {
     this.app.use(routes)
     this.app.use(handleErrorMiddleware)
+    this.app.use(handleError404Middleware)
+    this.app.use(handleCatchError)
   }
 
   start() {

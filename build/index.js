@@ -35,6 +35,8 @@ class Server {
     routes() {
         this.app.use(router_1.default);
         this.app.use(error_handler_1.handleErrorMiddleware);
+        this.app.use(error_handler_1.handleError404Middleware);
+        this.app.use(error_handler_1.handleCatchError);
     }
     start() {
         this.app.listen(settings_1.settings.PORT, () => {
