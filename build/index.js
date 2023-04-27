@@ -15,7 +15,8 @@ const rate_limiter_1 = require("./middlewares/rate_limiter");
 const router_1 = __importDefault(require("./router"));
 //importing configs
 const settings_1 = require("./config/settings");
-require("./connection/mongoDB");
+// import './connection/mongoDB'
+require("./database/database");
 class Server {
     constructor() {
         this.app = (0, express_1.default)();

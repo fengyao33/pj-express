@@ -13,7 +13,9 @@ import routes from './router'
 //importing configs
 import { settings } from './config/settings'
 
-import './connection/mongoDB'
+// import './connection/mongoDB'
+import './database/database'
+
 
 class Server {
   public app: express.Application

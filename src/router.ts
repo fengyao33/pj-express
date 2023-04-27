@@ -1,9 +1,8 @@
+
 import { Router } from 'express'
+import moviesShelf from '@modules/moviesshelf/moviesshelf.routes';
 const router = Router()
 
-//importing all routes here
-router.get('/', (req, res) => {
-    return res.json({ hello: 'Wordl' });
-})
+router.use('/api/admin/moviesShelf', moviesShelf)
 
 export default router

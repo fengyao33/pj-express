@@ -1,4 +1,1 @@
-{
-    "project": "REST API",
-    "orm": "mongoose"
-}
+{"project":"REST API","orm":"mongoose"}

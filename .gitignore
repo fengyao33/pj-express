@@ -25,3 +25,7 @@ yarn-error.log*
 *.sln
 *.sw*
 *.tar*
+
+/build
+# /package-lock.json
+/log
