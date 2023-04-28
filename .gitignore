@@ -29,3 +29,7 @@ yarn-error.log*
 /build
 # /package-lock.json
 /log
+
+# Mac
+build/
+log/
