@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import { settings } from '../config/settings';
+import { settings } from '@config/settings';
 
-const DB = `${settings.DB.URI}${settings.DB.NAME}`
+const DB: string = `${settings.DB.URI}${settings.DB.NAME}`
 mongoose
   .connect(DB, {
     serverSelectionTimeoutMS: 5000

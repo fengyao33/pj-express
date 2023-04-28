@@ -9,4 +9,5 @@ moduleAlias.addAliases({
   '@helpers': __dirname + '/helpers',
   '@config': __dirname + '/config',
   '@modules': __dirname + '/modules',
+  '@utils': __dirname + '/utils',
 })

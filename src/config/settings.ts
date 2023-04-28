@@ -24,4 +24,8 @@ export const settings = {
     FROM_ADDRESS: env.MAIL_FROM_ADDRESS,
     FROM_NAME: env.MAIL_FROM_NAME,
   },
+  JWT: {
+    JWT_EXPIRE_DAYS: env.JWT_EXPIRE_DAYS,
+    JWT_SECRET: env.JWT_SECRET
+  }
 }
