@@ -1,4 +1,4 @@
-import MoviesShelf from '@models/MoviesShelf'
+import MoviesShelf from '@models/moviesshelf.model'
 import on from "await-handler";
 import { v4 as uuidv4 } from 'uuid';
 
