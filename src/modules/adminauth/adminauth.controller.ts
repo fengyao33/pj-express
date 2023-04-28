@@ -27,17 +27,6 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
 }
 
 /**
- * Logout
- * @param req
- * @param res
- * @param next
- */
-export async function logout(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const { id } = req.params
-  const destroyer = new AdminauthService()
-}
-
-/**
  * Update Password
  * @param req
  * @param res

@@ -1,25 +1,16 @@
+import User from '@models/userauth.model';
+import bcrypt from 'bcryptjs';
 export class UserauthService {
-  async findOne(id: any): Promise<Object> {
-    return {}
+  async signup(email: string, password: string): Promise<Object> {
+    const hashPassword: string = await bcrypt.hash(password, 12);
+    const result = await User.create({ email, password: hashPassword });
+    return { email: result?.email}
   }
 
-  async findAll(): Promise<Object[]> {
-    return []
-  }
-
-  async update(id: any, body: any): Promise<Object> {
-    return {}
-  }
-
-  async store(body: any): Promise<Object> {
-    return {}
-  }
-
-  async destroy(id: any): Promise<Object> {
-    return {}
-  }
-
-  async delete(id: any): Promise<Object> {
-    return {}
+  async login(email: string, password: string) {
+    const result = await User.findOne({ email }).select('+password');
+    const comparePassword = await bcrypt.compare(password, result?.password)
+    if (!comparePassword) throw new Error('密碼錯誤');
+    return {email: result?.email}
   }
 }

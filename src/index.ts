@@ -11,7 +11,7 @@ import { rateLimiterMiddleware } from './middlewares/rate_limiter'
 import routes from './router'
 
 //importing configs
-import { settings } from './config/settings'
+import { settings } from '@config/settings'
 
 import './connection/mongoDB'
 

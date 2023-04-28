@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import successHandler from '../../middlewares/success_handler';
+// import successHandler from '../../middlewares/success_handler';
 import { UserauthService } from './services';
+import generateJWT from '../../utils/generateJWT';
 
 
 /**
@@ -9,10 +10,35 @@ import { UserauthService } from './services';
  * @param res
  * @param next
  */
-export async function singup(req: Request, res: Response, next: NextFunction): Promise<void> {
-  // const finder = new UserauthService()
-  const result: any = 'QQQ'
-  successHandler(res, result);
+export async function singup(req: Request, res: Response): Promise<void> {
+  try {
+    const { email, password, passwordCheck } = req.body
+    if (!email || !password || !passwordCheck) {
+      res.status(400).json({
+        status: 'fail',
+        message: '欄位未填寫正確'
+      })
+    }
+    if (password !== passwordCheck) {
+      res.status(400).json({
+        status: 'fail',
+        message: '密碼不一致'
+      })
+    }
+    const finder = new UserauthService();
+    const result = await finder.signup(email, password);
+    const token = generateJWT(email);
+    res.status(201).json({
+      status: 'success',
+      data: {
+        ...result,
+        token
+      }
+    })
+    
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 /**
@@ -21,20 +47,28 @@ export async function singup(req: Request, res: Response, next: NextFunction): P
  * @param res
  * @param next
  */
-export async function login(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const { id } = req.params
-  const finder = new UserauthService()
-}
-
-/**
- * Logout
- * @param req
- * @param res
- * @param next
- */
-export async function logout(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const { id } = req.params
-  const destroyer = new UserauthService()
+export async function login(req: Request, res: Response): Promise<void> {
+  try {
+    const { email, password } = req.body
+    if(!email||!password) {
+      res.status(400).json({
+        status: 'fail',
+        message: '欄位未填寫'
+      })
+    }
+    const finder = new UserauthService()
+    const result = await finder.login(email, password);
+    const token = generateJWT(email);
+    res.status(200).json({
+      status: 'success',
+      data: {
+        ...result,
+        token
+      }
+    })
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 /**
@@ -43,7 +77,7 @@ export async function logout(req: Request, res: Response, next: NextFunction): P
  * @param res
  * @param next
  */
-export async function updatePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function updatePassword(req: Request, res: Response): Promise<void> {
   const saver = new UserauthService()
 }
 
@@ -53,7 +87,7 @@ export async function updatePassword(req: Request, res: Response, next: NextFunc
  * @param res
  * @param next
  */
-export async function updateProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function updateProfile(req: Request, res: Response): Promise<void> {
   const { id } = req.params
   const updater = new UserauthService()
 }
