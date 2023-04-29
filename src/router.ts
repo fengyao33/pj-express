@@ -9,9 +9,9 @@ const router = Router()
 router.get('/', (req, res) => {
     return res.json({ Server: 'on' });
 });
-router.use('/api/admin/moviesShelf', moviesShelf)
-router.use('/api/user', UserRouter);
-router.use('/api/admin/user', AdminUserRouter);
+router.use('/admin/moviesShelf', moviesShelf)
+router.use('/user', UserRouter);
+router.use('/admin/user', AdminUserRouter);
 
 
 export default router
