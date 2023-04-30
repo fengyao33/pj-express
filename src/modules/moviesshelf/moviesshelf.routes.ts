@@ -9,6 +9,6 @@ router.get('/', Controller.index)
 
 router.post('/', [...storeValidators, validateBody], Controller.store)
 
-router.put('/:id', [...updateValidators, validateBody], Controller.update)
+router.patch('/:id', [...updateValidators, validateBody], Controller.update)
 
 export default router
