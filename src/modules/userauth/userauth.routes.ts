@@ -1,17 +1,19 @@
 // import { validateBody } from '@middlewares/validator';
+import { validateBody } from '@middlewares/validator';
 import { Router } from 'express';
 import * as Controller from './userauth.controller';
-// import { storeValidators, updateValidators } from './userauth.validator';
-import { NextFunction, Request, Response } from 'express';
+import { loginValidators, signupValidators, updatePasswordValidators, updateProfileValidators } from './userauth.validator';
 
 const router = Router()
 
-router.post('/signup', Controller.singup)
+router.post('/signup', [...signupValidators, validateBody], Controller.singup)
 
-router.post('/login', Controller.login)
+router.post('/login', [...loginValidators, validateBody], Controller.login)
 
-router.post('/password', Controller.updatePassword)
+router.post('/password', [...updatePasswordValidators, validateBody], Controller.updatePassword)
 
-router.patch('/profile', Controller.updateProfile)
+router.get('/profile/:email', Controller.getProfile)
+
+router.patch('/profile', [...updateProfileValidators, validateBody], Controller.updateProfile)
 
 export default router
