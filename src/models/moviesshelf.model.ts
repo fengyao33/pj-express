@@ -1,21 +1,31 @@
-import mongoose, { Document, Model, Schema } from 'mongoose'
-
+import mongoose, { Document, Model, Schema, Types } from 'mongoose'
+type Rating = 'G' | 'PG' | 'R';
 interface IMoviesShelf<T> extends Document {
-    // id: Number;
-    time: String;
-    // theater: Object;
-    // room: Object;
-    seatInfo: Array<T>;
-    // movie: Object;
+    canme: String,
+    ename: String,
+    rating: Rating,
+    // theater: Types.ObjectId,
+    director: String,
+    actor: Array<T>,
+    Length: String,
+    comeout: String,
+    premiere: String,
+    trailer: String,
+    story: String,
 }
 
 const moviesShelf = new Schema<IMoviesShelf<string|number>>({
-    // id: { type: Number },
-    time: { type: String, required: true },
-    // theater: { type: Object },
-    // room: { type: Object },
-    seatInfo: { type: Array},
-    // movie: { type: Object },
+    canme: { type: String, required: true },
+    ename: { type: String, required: true },
+    rating: { type: String, enum: ['G', 'PG', 'R']},
+    // theater: { type:  mongoose.Schema.Types.ObjectId, ref: 'Theater', required: true },
+    director: { type: String, required: true },
+    actor: { type:  Array<String>, required: true },
+    Length: { type: String, required: true },
+    comeout: { type: String, required: true },
+    premiere: { type: String, required: true },
+    trailer: { type: String, required: true },
+    story: { type: String, required: true },
 })
 
 
