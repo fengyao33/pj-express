@@ -1,29 +1,34 @@
 import { settings } from '@config/settings';
-import User from "@models/userauth.model";
+import User from "@models/user.model";
 import jwt from "jsonwebtoken";
 
-const isAuth = async (req, res) => {
-  const authorization = req.headers.authorization;
-  let token;
-
-  if (authorization &&
-    authorization.startsWith('Bearer')) {
-    token = authorization.split(' ')[1];
-  };
-  if (!token) {
-    return false
-  };
-  interface JWT_TOKEN {
+const isAuth = async (req, res, next) => {
+  const authorization: string = req.headers.authorization;
+  if (!authorization) {
+    res.status(401).json({
+      status: "fail",
+      message: "使用者未登入"
+    })
+  }
+  if (!authorization.startsWith('Bearer')) {
+    res.status(401).json({
+      status: "fail",
+      message: "使用者未登入"
+    })
+  }
+  const token = authorization.split(' ')[1]
+  interface JwtToken {
     email: string
   }
-  const tokenDecode: JWT_TOKEN = await new Promise((resolve, reject) => {
+  const tokenDecode: JwtToken = await new Promise((resolve, reject) => {
     jwt.verify(token, settings.JWT.JWT_SECRET, (err, payload) => {
       err ? reject(err) : resolve(payload);
     });
   });
   const user = User.findOne({ email: tokenDecode.email })
   req.user = user;
-  return true
+  console.log('user:', user)
+  next()
 }
 
 export default isAuth

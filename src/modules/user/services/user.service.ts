@@ -1,6 +1,15 @@
-import User from '@models/userauth.model';
+import User from '@models/user.model';
 import bcrypt from 'bcryptjs';
+import _ from 'lodash';
 import { v4 as uuid4 } from 'uuid';
+
+interface NewProfile {
+  name: string;
+  sex: string;
+  mobile: string;
+  birth: Date;
+  hobby: [string];
+}
 export class UserauthService {
   async signup(email: string, password: string): Promise<Object> {
     const hashPassword: string = await bcrypt.hash(password, 12);
@@ -25,11 +34,12 @@ export class UserauthService {
     const result = await User.findOne({ email }).select('-password')
     return result
   }
-  async updateProfile(email: string) {
-    try {
-      console.log('update profile')
-    } catch (error) {
-      return { error }
-    }
+
+
+  async updateProfile(email: string, newProfile: NewProfile) {
+    console.log('newProfile:', newProfile)
+    if (_.isEmpty(newProfile)) throw new Error('沒有需要更新的資料')
+    const result = await User.findOneAndUpdate({ email }, newProfile);
+    return result
   }
 }
