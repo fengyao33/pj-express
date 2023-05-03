@@ -19,6 +19,6 @@
     ```
 3. 建立module
    ```
-  module node-express-cli make:
+   module node-express-cli make:
    ```
 

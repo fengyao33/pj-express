@@ -4,13 +4,11 @@ import { NextFunction, Request, Response } from 'express'
 export class ErrorHandler extends Error {
   statusCode: number
   message: string
-  isOperational: boolean
 
   constructor(statusCode: number, message: string, isOperational: boolean) {
     super()
     this.statusCode = statusCode
     this.message = message
-    this.isOperational = isOperational
   }
 }
 
@@ -25,7 +23,7 @@ export const handleErrorMiddleware = (err: ErrorHandler | Error, req: Request, r
       message,
     })
   } else {
-    logger.error(`Error de servidor ${err}`)
+    logger.error(`Server Error: ${err}`)
     res.status(500).json({
       statusCode: 500,
       message: 'Internal Server Error',
@@ -44,11 +42,17 @@ export const handleError404Middleware = (req: Request, res: Response, next: Next
 }
 
 
-// catch miss error
+// catch missed error
 export const handleCatchError = (err: ErrorHandler | Error) => {
   process.on('unhandledRejection', (err, promise) => {
     console.error('Missed rejection:', promise, 'Reason:', err);
   });
+}
+
+export const handleAsyncError = (func) => {
+  return (req, res, next) => {
+    func(req, res, next).catch((error) => { return next(error) })
+  }
 }
 
 // env error handle
