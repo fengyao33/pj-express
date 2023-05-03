@@ -1,5 +1,3 @@
-import AdminMemberModel from "@models/adminMember.model";
-
 type FindAllArg = {
   timeSort: string;
   search: string;

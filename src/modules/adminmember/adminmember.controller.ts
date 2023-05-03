@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { AdminmemberService } from "./services";
 import successHandler from "@middlewares/success_handler";
-import AdminMemberModel from "@models/adminMember.model";
+import User from "@models/user.model";
 
 const service = new AdminmemberService();
 
@@ -20,7 +20,7 @@ export async function getAllMember(
     const search =
       req.query.q !== undefined ? { name: new RegExp(req.query.q) } : {};
     const timeSort = req.query.sort === "asc" ? "createdAt" : "-createdAt";
-    const result = await AdminMemberModel.find(search).sort(timeSort);
+    const result = await User.find(search).sort(timeSort);
     successHandler(res, result);
   } catch (error) {
     service.handleError(res, "請求失敗");
@@ -40,7 +40,7 @@ export async function getOneMember(
 ): Promise<void> {
   try {
     const { id } = req.params;
-    const result: any = await AdminMemberModel.findById(id);
+    const result: any = await User.findById(id);
     successHandler(res, result);
   } catch (error) {
     service.handleError(res, "請求失敗");
@@ -64,7 +64,7 @@ export async function postMember(
     if (password !== passwordCheck) {
       service.handleError(res, "密碼不一致");
     }
-    const result = await AdminMemberModel.create({
+    const result = await User.create({
       name: name,
       email: email,
       password: password,
@@ -94,7 +94,7 @@ export async function updateMember(
     if (!!password || (!!passwordCheck && password !== passwordCheck)) {
       service.handleError(res, "密碼不一致");
     }
-    const result: any = await AdminMemberModel.findByIdAndUpdate(id, {
+    const result: any = await User.findByIdAndUpdate(id, {
       ...body,
     });
     successHandler(res, result);
@@ -116,7 +116,7 @@ export async function delOneMember(
 ): Promise<void> {
   try {
     const { id } = req.params;
-    const result: any = await AdminMemberModel.findByIdAndDelete(id);
+    const result: any = await User.findByIdAndDelete(id);
     successHandler(res, result);
   } catch (error) {
     service.handleError(res, "請求失敗");
@@ -128,7 +128,7 @@ export async function delAllMember(
   next: NextFunction
 ): Promise<void> {
   try {
-    const result: any = await AdminMemberModel.deleteMany({});
+    const result: any = await User.deleteMany({});
     successHandler(res, result);
   } catch (error) {
     service.handleError(res, "請求失敗");
