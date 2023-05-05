@@ -1,8 +1,7 @@
 import dotenv from 'dotenv'
 import dotenvParseVariables from 'dotenv-parse-variables'
 
-// let env: any = dotenv.config()
-let env: any = process.env.DB
+let env: any = process.env
 if (env.error) console.log(env.error)
 env = dotenvParseVariables(env.parsed!)
 
