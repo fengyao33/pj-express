@@ -37,7 +37,6 @@ export class UserauthService {
 
 
   async updateProfile(email: string, newProfile: NewProfile) {
-    console.log('newProfile:', newProfile)
     if (_.isEmpty(newProfile)) throw new Error('沒有需要更新的資料')
     const result = await User.findOneAndUpdate({ email }, newProfile);
     return result

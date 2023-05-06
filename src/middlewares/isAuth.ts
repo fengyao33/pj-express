@@ -27,7 +27,6 @@ const isAuth = async (req, res, next) => {
   });
   const user = User.findOne({ email: tokenDecode.email })
   req.user = user;
-  console.log('user:', user)
   next()
 }
 

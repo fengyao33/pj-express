@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 // import successHandler from '../../middlewares/success_handler';
-import isAuth from "@middlewares/isAuth";
+import successHandler from '@middlewares/success_handler';
 import _ from 'lodash';
 import generateJWT from '../../utils/generateJWT';
 import { UserauthService } from './services';
@@ -25,14 +25,11 @@ export async function singup(req: Request, res: Response): Promise<void> {
     const result: any = await finder.signup(email, password);
     delete result.password;
     const token = generateJWT(email);
-    res.status(201).json({
-      status: 'success',
-      data: {
-        _id: result._id,
-        email: result.email,
-        token
-      }
-    })
+    successHandler(res, {
+      _id: result._id,
+      email: result.email,
+      token
+    }, 201)
   } catch (error: any) {
     res.status(400).json({
       status: 'fail',
@@ -53,14 +50,11 @@ export async function login(req: Request, res: Response): Promise<void> {
     const finder = new UserauthService()
     const result: any = await finder.login(email, password);
     const token = generateJWT(email);
-    res.status(200).json({
-      status: 'success',
-      data: {
-        _id: result._id,
-        email: result.email,
-        token
-      }
-    })
+    successHandler(res, {
+      _id: result._id,
+      email: result.email,
+      token
+    }, 200)
   } catch (error: any) {
     res.status(400).json({
       status: 'fail',
@@ -87,14 +81,11 @@ export async function updatePassword(req: Request, res: Response): Promise<void>
     const updater = new UserauthService();
     const result: any = await updater.updatePassword(email, password);
     const token = generateJWT(email);
-    res.status(201).json({
-      status: 'success',
-      data: {
-        _id: result._id,
-        email: result.email,
-        token
-      }
-    })
+    successHandler(res, {
+      _id: result._id,
+      email: result.email,
+      token
+    }, 200)
   } catch (error: any) {
     res.status(400).json({
       status: 'fail',
@@ -115,17 +106,14 @@ export async function getProfile(req: Request, res: Response): Promise<void> {
     const finder = new UserauthService();
     const result: any = await finder.getProfile(userEmail);
     const { name, email, sex, birth, mobile, hobby } = result
-    res.status(200).json({
-      status: 'success',
-      data: {
-        name,
-        email,
-        sex,
-        birth,
-        mobile,
-        hobby
-      }
-    })
+    successHandler(res, {
+      name,
+      email,
+      sex,
+      birth,
+      mobile,
+      hobby
+    }, 200)
   } catch (error: any) {
     res.status(404).json({
       status: "fail",
@@ -146,13 +134,10 @@ export async function updateProfile(req: Request, res: Response): Promise<void> 
     const newProfile = _.omitBy({ name, sex, birth, mobile, hobby }, _.isEmpty)
     const updater = new UserauthService();
     const result: any = await updater.updateProfile(email, newProfile);
-    res.status(200).json({
-      status: 'success',
-      data: {
-        email,
-        ...newProfile
-      }
-    })
+    successHandler(res, {
+      email,
+      ...newProfile
+    }, 200)
   } catch (error: any) {
     res.status(404).json({
       status: "fail",
