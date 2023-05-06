@@ -9,11 +9,12 @@ interface NewProfile {
   mobile: string;
   birth: Date;
   hobby: [string];
+  roles: [string];
 }
 export class UserauthService {
   async signup(email: string, password: string): Promise<Object> {
     const hashPassword: string = await bcrypt.hash(password, 12);
-    const result = await User.create({ id: uuid4(), email, password: hashPassword });
+    const result = await User.create({ id: uuid4(), email, password: hashPassword, roles: ['user'] });
     return result
   }
 

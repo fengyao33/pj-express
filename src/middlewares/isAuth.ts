@@ -17,7 +17,6 @@ const isAuth = async (req, res, next) => {
   const tokenDecode: JwtToken = await new Promise((resolve, reject) => {
     jwt.verify(token, settings.JWT.JWT_SECRET, (error, payload) => {
       if (error) {
-        console.log('error:', error)
         reject(error)
         return handleErrorMiddleware(new ErrorHandler(401, 'JWT Token驗證失敗'), req, res, next)
       } else {

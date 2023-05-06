@@ -13,6 +13,7 @@ interface IUser {
   createdAt: Date;
   updatedAt: Date;
   enable: boolean;
+  roles: string[];
 }
 
 const userSchema = new Schema<IUser>({
@@ -51,6 +52,10 @@ const userSchema = new Schema<IUser>({
   },
   enable: {
     type: Boolean
+  },
+  roles: {
+    type: [String],
+    required: true
   }
 }, {
   versionKey: false,

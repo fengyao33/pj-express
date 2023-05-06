@@ -1,12 +1,16 @@
-import jwt from 'jsonwebtoken';
 import { settings } from '@config/settings';
+import jwt from 'jsonwebtoken';
 
 const generateJWT = (email: string) => {
-  const token = jwt.sign(
-    { email },
-    settings.JWT.JWT_SECRET,
-    { expiresIn: settings.JWT.JWT_EXPIRE_DAYS })
-  return token
+  try {
+    const token = jwt.sign(
+      { email },
+      settings.JWT.JWT_SECRET,
+      { expiresIn: settings.JWT.JWT_EXPIRE_DAYS })
+    return token
+  } catch (error: any) {
+    throw new Error(error.message)
+  }
 }
 
 
