@@ -23,7 +23,8 @@
       "@middlewares/*": ["middlewares/*"],
       "@helpers/*": ["helpers/*"],
       "@config/*": ["config/*"],
-      "@modules/*": ["modules/*"]
+      "@modules/*": ["modules/*"],
+      "@utils/*": ["utils/*"]
     }
   },
   "exclude": ["node_modules", "build"]

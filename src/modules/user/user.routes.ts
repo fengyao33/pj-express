@@ -1,4 +1,3 @@
-// import { validateBody } from '@middlewares/validator';
 import isAuth from "@middlewares/isAuth";
 import { validateBody } from '@middlewares/validator';
 import { Router } from 'express';
