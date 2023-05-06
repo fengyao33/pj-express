@@ -3,6 +3,7 @@ import { SessionsService } from './services'
 import jwt from 'jsonwebtoken';
 import { ErrorHandler, handleErrorMiddleware } from '@middlewares/error_handler';
 import successHandler from '@middlewares/success_handler';
+import { settings } from '@config/settings'
 
 
 /**
@@ -55,15 +56,15 @@ export async function isLogin(req: Request, res: Response, next: NextFunction): 
   }
 
   if (!token) {
-    return handleErrorMiddleware(new ErrorHandler(401, '未登入', true), req, res, next)
+    // return handleErrorMiddleware(new ErrorHandler(401, '未登入', true), req, res, next)
   }
   //#endregion
 
   //驗證 token 正確性
   await new Promise<void>((resolve, reject) => {
-    jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
+    jwt.verify(token, settings.JWT.JWT_SECRET, (err, payload) => {
       if (err) {
-        return handleErrorMiddleware(new ErrorHandler(401, 'token驗證失敗', true), req, res, next);
+        // return handleErrorMiddleware(new ErrorHandler(401, 'token驗證失敗', true), req, res, next);
       } else {
         //resolve(payload)
         next()
