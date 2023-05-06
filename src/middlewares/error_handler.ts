@@ -5,7 +5,7 @@ export class ErrorHandler extends Error {
   statusCode: number
   message: string
 
-  constructor(statusCode: number, message: string, isOperational: boolean) {
+  constructor(statusCode: number, message: string) {
     super()
     this.statusCode = statusCode
     this.message = message
@@ -22,6 +22,7 @@ export const handleErrorMiddleware = (err: ErrorHandler | Error, req: Request, r
       statusCode,
       message,
     })
+    next()
   } else {
     logger.error(`Server Error: ${err}`)
     res.status(500).json({

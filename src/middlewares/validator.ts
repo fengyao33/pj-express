@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express'
-import { validationResult, Result, ValidationError } from 'express-validator'
+import { NextFunction, Request, Response } from 'express'
+import { Result, ValidationError, validationResult } from 'express-validator'
 
 export function validateBody(req: Request, res: Response, next: NextFunction) {
   const errors: Result<ValidationError> = validationResult(req)
@@ -8,7 +8,8 @@ export function validateBody(req: Request, res: Response, next: NextFunction) {
 
   if (!errors.isEmpty()) {
     return res.status(400).json({
-      errors: arrayErrors,
+      status: 'fail',
+      message: arrayErrors.map(error => { return error.msg }),
     })
   }
 
