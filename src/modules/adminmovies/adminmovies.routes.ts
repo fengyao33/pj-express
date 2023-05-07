@@ -5,14 +5,16 @@ import { validateBody } from '@middlewares/validator';
 
 const router = Router()
 
-router.get('/', Controller.index)
+router.get("/", Controller.getAllMovies);
 //
-router.get('/:id', Controller.show)
+router.post("/", [...storeValidators, validateBody], Controller.postMovies);
 //
-router.post('/', [...storeValidators, validateBody], Controller.store)
+router.patch(
+  "/:id",
+  [...updateValidators, validateBody],
+  Controller.updateMovies
+);
 //
-router.put('/:id', [...updateValidators, validateBody], Controller.update)
-//
-router.delete('/:id', Controller.destroy)
+router.delete("/:id", Controller.deleteOneMovies);
 
 export default router
