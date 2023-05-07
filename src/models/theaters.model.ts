@@ -2,28 +2,29 @@ import { Schema, model, connect, Document } from "mongoose";
 import TicketType from "./ticketTypes.model";
 
 export interface ISeat {
-  x: number;
-  y: number;
-  col: number;
-  row: number;
-  status: number;
+  x: number,
+  y: number,
+  col: number,
+  row: number,
+  status: number
 }
 
 export interface IRoom {
-  name: string;
-  xCount: number;
-  yCount: number;
-  seats: ISeat[];
+  name: string,
+  xCount: number,
+  yCount: number,
+  type: string,
+  seats: ISeat[]
 }
 
 interface ITheater extends Document {
-  name: string;
-  address: string;
-  phone: string;
-  rooms: IRoom[];
-  introduction: string;
-  trafficAdvice: string[];
-  ticketTypeInfoIds: Schema.Types.ObjectId[];
+  name: string,
+  address: string,
+  phone: string,
+  rooms: IRoom[],
+  introduction: string,
+  trafficAdvice: string[],
+  ticketTypeInfoIds: Schema.Types.ObjectId[]
 }
 
 export const seatSchema = new Schema<ISeat>(
@@ -54,6 +55,7 @@ export const roomSchema = new Schema<IRoom>(
     },
     xCount: { type: Number, required: [true, "請輸入 x 軸座位總數"] },
     yCount: { type: Number, required: [true, "請輸入 y 軸座位總數"] },
+    type: { type: String, required: [true, "請輸入影廳類型"] },
     seats: { type: [seatSchema], required: [true, "請輸入座位資訊"] },
   },
   { _id: false }
