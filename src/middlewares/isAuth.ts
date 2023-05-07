@@ -3,7 +3,7 @@ import {
   ErrorHandler,
   handleErrorMiddleware,
 } from "@middlewares/error_handler";
-import { jwt } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 const isAuth = async (req, res, next) => {
   const authorization: string = req.headers.authorization;

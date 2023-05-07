@@ -31,7 +31,7 @@ export async function singup(
     const result: any = await finder.signup(email, password);
     delete result.password;
     const token = generateJWT(email);
-    return successHandler(
+    successHandler(
       res,
       {
         _id: result._id,
@@ -65,7 +65,7 @@ export async function login(
     const finder = new UserauthService();
     const result: any = await finder.login(email, password);
     const token = generateJWT(email);
-    return successHandler(
+    successHandler(
       res,
       {
         _id: result._id,
@@ -103,7 +103,7 @@ export async function updatePassword(
     const updater = new UserauthService();
     const result: any = await updater.updatePassword(email, password);
     const token = generateJWT(email);
-    return successHandler(
+    successHandler(
       res,
       {
         _id: result._id,
@@ -129,7 +129,7 @@ export async function getProfile(req: Request, res: Response): Promise<void> {
     const finder = new UserauthService();
     const result: any = await finder.getProfile(userEmail);
     const { name, email, sex, birth, mobile, hobby } = result;
-    return successHandler(
+    successHandler(
       res,
       {
         name,
@@ -164,7 +164,7 @@ export async function updateProfile(
     const newProfile = _.omitBy({ name, sex, birth, mobile, hobby }, _.isEmpty);
     const updater = new UserauthService();
     const result: any = await updater.updateProfile(email, newProfile);
-    return successHandler(
+    successHandler(
       res,
       {
         email,
