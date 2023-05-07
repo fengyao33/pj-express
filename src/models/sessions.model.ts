@@ -1,13 +1,13 @@
 import { Schema, model, connect, Document, Date } from "mongoose";
 import { IRoom, ISeat, roomSchema, seatSchema } from "./theaters.model";
-import TicketType, { ITicketType } from "./ticketTypes.model";
+import TicketType from "./ticketTypes.model";
 
 export interface ISession extends Document {
-  datetime: Date;
-  theaterId: Schema.Types.ObjectId;
-  roomInfo: IRoom;
-  movieId: Schema.Types.ObjectId;
-  ticketTypeIds: Schema.Types.ObjectId[];
+  datetime: Date,
+  theaterId: Schema.Types.ObjectId,
+  roomInfo: IRoom,
+  movieId: Schema.Types.ObjectId,
+  ticketTypeIds: Schema.Types.ObjectId[]
 }
 
 const seatSchemaForSession = new Schema<ISeat>(
@@ -24,6 +24,14 @@ const seatSchemaForSession = new Schema<ISeat>(
 
 const roomSchemaForSession = new Schema<IRoom>(
   {
+    name: {
+      type: String,
+      required: [true, "請輸入影廳名稱欄位:name"],
+      validate: {
+        validator: (name: string) => /^\d+廳$/.test(name),
+        message: '影廳名稱必須為 "數字+廳" 的格式',
+      },
+    },
     ...roomSchema.obj,
     seats: { type: [seatSchemaForSession], required: [true, "請輸入座位資訊"] },
   },
