@@ -129,7 +129,7 @@ export async function getProfile(req: Request, res: Response): Promise<void> {
     const finder = new UserauthService();
     const result: any = await finder.getProfile(userEmail);
     const { name, email, sex, birth, mobile, hobby } = result;
-    return successHandler(
+    successHandler(
       res,
       {
         name,
