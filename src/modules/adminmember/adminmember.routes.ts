@@ -1,9 +1,9 @@
-import { Router } from 'express'
-import * as Controller from './adminmember.controller'
-import { storeValidators, updateValidators } from './adminmember.validator';
-import { validateBody } from '@middlewares/validator';
+import { Router } from "express";
+import * as Controller from "./adminmember.controller";
+import { storeValidators, updateValidators } from "./adminmember.validator";
+import { validateBody } from "@middlewares/validator";
 
-const router = Router()
+const router = Router();
 
 router.get("/", Controller.getAllMember);
 //
@@ -20,5 +20,4 @@ router.patch(
 router.delete("/:id", Controller.delOneMember);
 router.delete("/", Controller.delAllMember);
 
-
-export default router
+export default router;

@@ -4,7 +4,7 @@ type FindAllArg = {
 };
 
 export class AdminmemberService {
-  handleError(res: any, msg:string) {
+  handleError(res: any, msg: string) {
     res.status(400).json({
       status: "fail",
       message: msg,

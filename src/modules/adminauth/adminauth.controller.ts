@@ -1,7 +1,6 @@
-import { NextFunction, Request, Response } from 'express';
-import successHandler from '../../middlewares/success_handler';
-import { AdminauthService } from './services';
-
+import { NextFunction, Request, Response } from "express";
+import successHandler from "../../middlewares/success_handler";
+import { AdminauthService } from "./services";
 
 /**
  * User Sign Up
@@ -9,9 +8,13 @@ import { AdminauthService } from './services';
  * @param res
  * @param next
  */
-export async function singup(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const finder = new AdminauthService()
-  const result: any = 'QQQ'
+export async function singup(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  const finder = new AdminauthService();
+  const result: any = "QQQ";
   successHandler(res, result);
 }
 
@@ -21,9 +24,13 @@ export async function singup(req: Request, res: Response, next: NextFunction): P
  * @param res
  * @param next
  */
-export async function login(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const { id } = req.params
-  const finder = new AdminauthService()
+export async function login(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  const { id } = req.params;
+  const finder = new AdminauthService();
 }
 
 /**
@@ -32,6 +39,10 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
  * @param res
  * @param next
  */
-export async function updatePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const saver = new AdminauthService()
+export async function updatePassword(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  const saver = new AdminauthService();
 }

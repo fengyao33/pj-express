@@ -1,1 +1,1 @@
-export * from './adminauth.service'
+export * from "./adminauth.service";

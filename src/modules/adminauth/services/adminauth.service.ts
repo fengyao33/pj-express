@@ -1,25 +1,25 @@
 export class AdminauthService {
   async findOne(id: any): Promise<Object> {
-    return {}
+    return {};
   }
 
   async findAll(): Promise<Object[]> {
-    return []
+    return [];
   }
 
   async update(id: any, body: any): Promise<Object> {
-    return {}
+    return {};
   }
 
   async store(body: any): Promise<Object> {
-    return {}
+    return {};
   }
 
   async destroy(id: any): Promise<Object> {
-    return {}
+    return {};
   }
 
   async delete(id: any): Promise<Object> {
-    return {}
+    return {};
   }
 }
