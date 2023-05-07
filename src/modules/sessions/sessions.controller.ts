@@ -40,42 +40,6 @@ export async function getRoomInfo(req: Request, res: Response, next: NextFunctio
 }
 
 /**
- * check is login
- * @param req
- * @param res
- * @param next
- */
-export async function isLogin(req: Request, res: Response, next: NextFunction): Promise<void> {
-  //#region  確認 token 是否存在
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    token = req.headers.authorization.split(' ')[1];
-  }
-
-  if (!token) {
-    // return handleErrorMiddleware(new ErrorHandler(401, '未登入', true), req, res, next)
-  }
-  //#endregion
-
-  //驗證 token 正確性
-  await new Promise<void>((resolve, reject) => {
-    jwt.verify(token, settings.JWT.JWT_SECRET, (err, payload) => {
-      if (err) {
-        // return handleErrorMiddleware(new ErrorHandler(401, 'token驗證失敗', true), req, res, next);
-      } else {
-        //resolve(payload)
-        next()
-      }
-    });
-  });
-
-
-}
-
-/**
  * Return seatsInfo from the Specified session
  * @param req
  * @param res
