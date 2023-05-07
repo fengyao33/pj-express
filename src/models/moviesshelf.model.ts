@@ -26,7 +26,7 @@ const moviesShelf = new Schema<IMoviesShelf<string | number>>({
   release_date: { type: String, required: true },
   poster: { type: String, required: true },
   trailer: { type: String, required: true },
-  story: { type: String, required: true },
+  synopsis: { type: String, required: true },
   genre: { type: String, required: true },
 });
 
