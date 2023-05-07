@@ -1,20 +1,17 @@
-import { Router } from 'express'
-import * as Controller from './adminmovies.controller'
-import { storeValidators, updateValidators } from './adminmovies.validator';
-import { validateBody } from '@middlewares/validator';
+import isAuth from "@middlewares/isAuth";
+import { Router } from "express";
+import * as Controller from "./adminmovies.controller";
+import { storeValidators, updateValidators } from "./adminmovies.validator";
+import { validateBody } from "@middlewares/validator";
 
-const router = Router()
+const router = Router();
 
 router.get("/", Controller.getAllMovies);
 //
-router.post("/", [...storeValidators, validateBody], Controller.postMovies);
+router.post("/",isAuth , Controller.postMovies);
 //
-router.patch(
-  "/:id",
-  [...updateValidators, validateBody],
-  Controller.updateMovies
-);
+router.patch("/:id", isAuth, Controller.updateMovies);
 //
-router.delete("/:id", Controller.deleteOneMovies);
+router.delete("/:id", isAuth, Controller.deleteOneMovies);
 
-export default router
+export default router;

@@ -52,7 +52,7 @@ export async function postMovies(
     });
     successHandler(res, result);
   } catch (error: any) {
-    handleErrorMiddleware(new ErrorHandler(400, "請求失敗"), req, res, next);
+    handleErrorMiddleware(new ErrorHandler(400, error.message), req, res, next);
   }
 }
 
