@@ -2,6 +2,9 @@ import User from "@models/user.model";
 import bcrypt from "bcryptjs";
 import _ from "lodash";
 import { v4 as uuid4 } from "uuid";
+import jwt from "jsonwebtoken";
+import { IOrder } from "@models/orders.model";
+import MoviesShelf from "@models/moviesshelf.model";
 
 interface NewProfile {
   name: string;
@@ -48,4 +51,34 @@ export class UserauthService {
     const result = await User.findOneAndUpdate({ email }, newProfile);
     return result;
   }
+
+  async getPurchaseRecord(authToken, page, limit) {
+    //get user email from JWT
+    const decode = await jwt.verify(authToken, process.env.JWT_SECRET, { complete: false });
+    const result: any = await User.findOne({ email: decode.email.toLowerCase() }).populate({
+      path: "orderId", options: {
+        sort: { orderDatetime: -1 },
+        skip: page, limit: limit,
+        populate: { path: "sessionId", options: { populate: [{ path: "theaterId" }, { path: "movieId" }, { path: "ticketTypeIds" }] } }
+      }
+    })
+
+    return result.orderId
+  }
+
+  async getBonusRecord(authToken, page, limit) {
+    //get user email from JWT
+    const decode = await jwt.verify(authToken, process.env.JWT_SECRET, { complete: false });
+    const result = await User.find({ email: decode.email.toLowerCase() }).populate({ path: "orderId" })//.sort({ createdAt: -1 }).skip(parseInt(page)).limit(parseInt(limit))
+    return { orders: [], bonus: 100, expire: { bonus: 10, date: getExpireDate() } }
+  }
+}
+
+
+function getExpireDate() {
+  const now = new Date(); // 取得現在時間
+  const year = now.getFullYear() + 1; // 取得現在年份並加上1
+  const endOfYear = new Date(year, 11, 31); // 設定為12月31日
+
+  return endOfYear.getFullYear() + "/" + (endOfYear.getMonth() + 1) + "/" + endOfYear.getDate();
 }

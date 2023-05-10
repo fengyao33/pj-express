@@ -8,6 +8,7 @@ import adminMember from '@modules/adminmember/adminmember.routes';
 
 import SessionsRouter from '@modules/sessions/sessions.routes';
 import TheatersRouter from '@modules/theaters/theaters.routes';
+import BookingRouter from '@modules/booking/booking.routes';
 const router = Router()
 
 //importing all routes here
@@ -20,6 +21,7 @@ router.use('/admin/user', AdminUserRouter);
 router.use("/admin/member", adminMember);
 router.use('/sessions', SessionsRouter);
 router.use('/theaters', TheatersRouter);
+router.use('/booking', BookingRouter);
 
 
 export default router

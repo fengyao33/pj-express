@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import Order from "./orders.model";
 
 interface IUser {
   id: string;
@@ -13,6 +14,7 @@ interface IUser {
   createdAt: Date;
   updatedAt: Date;
   enable: boolean;
+  orderId:Schema.Types.ObjectId[]
 }
 
 const userSchema = new Schema<IUser>(
@@ -53,6 +55,12 @@ const userSchema = new Schema<IUser>(
     enable: {
       type: Boolean,
     },
+    orderId:[{
+      type: Schema.Types.ObjectId,
+      required:true,
+      unique:true,
+      ref: Order.collection.name
+    }]
   },
   {
     versionKey: false,

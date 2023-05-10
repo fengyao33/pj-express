@@ -1,13 +1,15 @@
 import { Schema, model, connect, Document, Date } from "mongoose";
-import { IRoom, ISeat, roomSchema, seatSchema } from "./theaters.model";
+import Theater, { IRoom, ISeat, roomSchema, seatSchema } from "./theaters.model";
 import TicketType from "./ticketTypes.model";
+import MoviesShelf from "./moviesshelf.model";
 
 export interface ISession extends Document {
   datetime: Date,
   theaterId: Schema.Types.ObjectId,
   roomInfo: IRoom,
   movieId: Schema.Types.ObjectId,
-  ticketTypeIds: Schema.Types.ObjectId[]
+  ticketTypeIds: Schema.Types.ObjectId[],
+  seats:ISeat[]
 }
 
 const seatSchemaForSession = new Schema<ISeat>(
@@ -22,22 +24,6 @@ const seatSchemaForSession = new Schema<ISeat>(
   { _id: false }
 );
 
-const roomSchemaForSession = new Schema<IRoom>(
-  {
-    name: {
-      type: String,
-      required: [true, "請輸入影廳名稱欄位:name"],
-      validate: {
-        validator: (name: string) => /^\d+廳$/.test(name),
-        message: '影廳名稱必須為 "數字+廳" 的格式',
-      },
-    },
-    ...roomSchema.obj,
-    seats: { type: [seatSchemaForSession], required: [true, "請輸入座位資訊"] },
-  },
-  { _id: false }
-);
-
 const sessionSchema = new Schema<ISession>(
   {
     datetime: {
@@ -47,14 +33,17 @@ const sessionSchema = new Schema<ISession>(
     theaterId: {
       type: Schema.Types.ObjectId,
       required: [true, "請輸入影城id欄位:theaterId"],
+      ref: Theater.collection.name
     },
     roomInfo: {
-      type: roomSchemaForSession,
-      required: [true, "請輸入影廳資訊欄位:roomInfo.name"],
+      type: Schema.Types.ObjectId,
+      required: [true, "請輸入影廳id欄位:roomInfo"],
+      ref: Theater.collection.name
     },
     movieId: {
       type: Schema.Types.ObjectId,
       required: [true, "請輸入電影id欄位:movieId"],
+      ref: MoviesShelf.modelName
     },
     ticketTypeIds: [
       {
@@ -63,6 +52,12 @@ const sessionSchema = new Schema<ISession>(
         ref: TicketType.collection.name,
       },
     ],
+    seats:[
+      {
+        type:seatSchemaForSession,
+        required: [true, "座位結構欄位未輸入"],
+      }
+    ]
   },
   {
     versionKey: false,
