@@ -55,7 +55,7 @@ export class UserauthService {
   async getPurchaseRecord(authToken, page, limit) {
     //get user email from JWT
     const decode = await jwt.verify(authToken, process.env.JWT_SECRET, { complete: false });
-    const result: any = await User.findOne({ email: decode.email.toLowerCase() }).populate({
+    const user: any = await User.findOne({ email: decode.email.toLowerCase() }).populate({
       path: "orderId", options: {
         sort: { orderDatetime: -1 },
         skip: page, limit: limit,
@@ -63,22 +63,60 @@ export class UserauthService {
       }
     })
 
-    return result.orderId
+    return user.orderId.map(order => {
+      return {
+        movieName: order.sessionId.movieId.movieCName,//電影名稱
+        movieNameEng: order.sessionId.movieId.movieEName,//電影英文名稱
+        theaterName: order.sessionId.theaterId.name,//影城名稱
+        movieDatetime: order.sessionId.datetime,//開演時間
+        ticketType: order.ticketTypeName,//票別
+        seats: order.seats,//座位s
+        price: order.price,//金額
+        orderId: order.orderId,//訂單編號,barcode產生
+        payMethod: order.payMethod,//付款方式
+        orderDatetime: order.orderDatetime,//訂單時間
+        status: order.status//未取票,已取票,已退票,未付款
+      }
+    })
   }
 
   async getBonusRecord(authToken, page, limit) {
     //get user email from JWT
     const decode = await jwt.verify(authToken, process.env.JWT_SECRET, { complete: false });
-    const result = await User.find({ email: decode.email.toLowerCase() }).populate({ path: "orderId" })//.sort({ createdAt: -1 }).skip(parseInt(page)).limit(parseInt(limit))
-    return { orders: [], bonus: 100, expire: { bonus: 10, date: getExpireDate() } }
+    const user: any = await User.findOne({ email: decode.email.toLowerCase() }).populate({
+      path: "orderId", options: {
+        sort: { orderDatetime: -1 },
+        populate: { path: "sessionId", options: { populate: { path: "theaterId" } } }
+      }
+    })
+    const returnOrders = user.orderId.map(order => {
+      return {
+        theaterName: order.sessionId.theaterId.name, //影城名稱
+        orderNumber: order.orderId, //訂單編號
+        orderDate: order.orderDatetime, //訂單時間
+        bonus: Math.round(order.price / 10) //點數機制:消費/10
+      }
+    }).filter(order=>order.status == "未取票" || order.status == "已取票")
+
+    const endDateOfThisYear = new Date(new Date().getFullYear(), 11, 31)
+    const endDateOfNextYear = new Date(new Date().getFullYear() + 1, 11, 31)
+
+    return {
+      orders: returnOrders.filter((order, index) => index >= page && index < page + limit),
+      bonus: getBonus(returnOrders, endDateOfNextYear),
+      expire: {
+        bonus: getBonus(returnOrders, endDateOfThisYear),
+        date: toDate(endDateOfThisYear)
+      }
+    };
   }
 }
 
 
-function getExpireDate() {
-  const now = new Date(); // 取得現在時間
-  const year = now.getFullYear() + 1; // 取得現在年份並加上1
-  const endOfYear = new Date(year, 11, 31); // 設定為12月31日
+function toDate(datetime) {
+  return datetime.getFullYear() + "/" + (datetime.getMonth() + 1) + "/" + datetime.getDate();
+}
 
-  return endOfYear.getFullYear() + "/" + (endOfYear.getMonth() + 1) + "/" + endOfYear.getDate();
+function getBonus(orders, targetDate) {
+  return orders.filter(order => new Date(order.orderDate) < targetDate).reduce((acc, order) => acc + order.bonus, 0);
 }

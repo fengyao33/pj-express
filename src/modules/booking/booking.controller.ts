@@ -30,3 +30,14 @@ export async function result(req: Request, res: Response, next: NextFunction): P
   const cashService = new BookingService()
   res.send(cashService.completedPay(req.body))
 }
+
+/**
+ * hash booking data for reCreate
+ * @param req
+ * @param res
+ * @param next
+ */
+export async function reCreateEcpayData(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const cashService = new BookingService()
+  successHandler(res, await cashService.reHashData(req.params.orderId))
+}

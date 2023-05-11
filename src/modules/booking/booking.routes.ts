@@ -8,5 +8,6 @@ const router = Router()
 
 router.post('/result', Controller.result)
 router.post('/', isAuth, Controller.index)
+router.get('/rePay/:orderId', isAuth, Controller.reCreateEcpayData)
 
 export default router

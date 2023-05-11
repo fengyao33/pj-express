@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import dotenvParseVariables from 'dotenv-parse-variables'
 
-let env: any =dotenv.config()
+let env: any = dotenv.config()
 if (env.error) console.log(env.error)
 env = dotenvParseVariables(env.parsed!)
 
@@ -27,5 +27,11 @@ export const settings = {
   JWT: {
     JWT_EXPIRE_DAYS: env.JWT_EXPIRE_DAYS,
     JWT_SECRET: env.JWT_SECRET
+  },
+  ECPAY: {
+    ECPAY_HASHKEY: env.ECPAY_HASHKEY,
+    ECPAY_HASHIV: env.ECPAY_HASHIV,
+    ECPAY_RETURNURL: env.ECPAY_RETURNURL,
+    ECPAY_CLIENTBACKURL: env.ECPAY_CLIENTBACKURL
   }
 }

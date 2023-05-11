@@ -6,6 +6,7 @@ import TicketType from "@models/ticketTypes.model";
 import { ErrorHandler } from "@middlewares/error_handler";
 import Theater from "@models/theaters.model";
 import User from "@models/user.model";
+import { settings } from "@config/settings";
 
 function generateCheckMacValue(params: any, hashKey: string, hashIV: string) {
   // Step 1: sort parameters by alphabet order
@@ -148,14 +149,14 @@ export class BookingService {
       TotalAmount: createResult.price.toString(),
       TradeDesc: '我是商品描述',
       ItemName: createResult.ticketTypeName.join('#'),
-      ReturnURL: 'https://expresstestserver.onrender.com/OrderOK',
+      ReturnURL: settings.ECPAY.ECPAY_RETURNURL,
       ChoosePayment: 'ALL',
       EncryptType: '1',
-      ClientBackURL: 'http://localhost:3000/ecpayTest',
+      ClientBackURL: settings.ECPAY.ECPAY_CLIENTBACKURL,
       NeedExtraPaidInfo: 'N'
     }
 
-    payData.CheckMacValue = generateCheckMacValue(payData,"pwFHCqoQZGmho4w6","EkRm7iFT261dpevs")
+    payData.CheckMacValue = generateCheckMacValue(payData,settings.ECPAY.ECPAY_HASHKEY,settings.ECPAY.ECPAY_HASHIV)
 
     return payData;
   }
@@ -165,5 +166,26 @@ export class BookingService {
     return '1|OK'
   }
 
+  async reHashData(orderId: any): Promise<Object> {
+    const order:any = await Order.findOne({orderId})
 
+    const payData: any = {
+      MerchantID: '3002607',
+      MerchantTradeNo: order.orderId,
+      MerchantTradeDate: getEcpatDateTime(order.orderDatetime),
+      PaymentType: 'aio',
+      TotalAmount: order.price.toString(),
+      TradeDesc: '我是商品描述',
+      ItemName: order.ticketTypeName.join('#'),
+      ReturnURL: settings.ECPAY.ECPAY_RETURNURL,
+      ChoosePayment: 'ALL',
+      EncryptType: '1',
+      ClientBackURL: settings.ECPAY.ECPAY_CLIENTBACKURL,
+      NeedExtraPaidInfo: 'N'
+    }
+
+    payData.CheckMacValue = generateCheckMacValue(payData,settings.ECPAY.ECPAY_HASHKEY,settings.ECPAY.ECPAY_HASHIV)
+
+    return payData;
+  }
 }
