@@ -5,6 +5,7 @@ import AdminUserRouter from './modules/adminauth/adminauth.routes';
 
 import UserRouter from '@modules/user/user.routes';
 import adminMember from '@modules/adminmember/adminmember.routes';
+import adminMovies from "@modules/adminmovies/adminmovies.routes";
 
 import SessionsRouter from '@modules/sessions/sessions.routes';
 import TheatersRouter from '@modules/theaters/theaters.routes';
@@ -19,6 +20,7 @@ router.use('/admin/moviesShelf', moviesShelf)
 router.use('/user', UserRouter);
 router.use('/admin/user', AdminUserRouter);
 router.use("/admin/member", adminMember);
+router.use("/admin/movies", adminMovies);
 router.use('/sessions', SessionsRouter);
 router.use('/theaters', TheatersRouter);
 router.use('/booking', BookingRouter);

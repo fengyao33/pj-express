@@ -86,36 +86,36 @@ export class BookingService {
   async checkData(data: any): Promise<Object> {
     //判斷有無此場次
     const selectedSession = await Session.findById(data.sessionId)
-    
-    if(selectedSession==undefined)return new ErrorHandler(400,"沒有此場次")
+
+    if (selectedSession == undefined) return new ErrorHandler(400, "沒有此場次")
     //判斷選取票種是否有在該場次內
-    for(let i = 0; i < data.ticketTypeIds.length; i++){
+    for (let i = 0; i < data.ticketTypeIds.length; i++) {
       let isExisted = false;
-      for(let j = 0; j < selectedSession.ticketTypeIds.length; j++){
-        if(data.ticketTypeIds[i] == selectedSession.ticketTypeIds[j].toString()){
+      for (let j = 0; j < selectedSession.ticketTypeIds.length; j++) {
+        if (data.ticketTypeIds[i] == selectedSession.ticketTypeIds[j].toString()) {
           isExisted = true;
           break;
         }
       }
-      if(!isExisted) return new ErrorHandler(400,"該場次沒有此票種");
+      if (!isExisted) return new ErrorHandler(400, "該場次沒有此票種");
     }
     //判斷選取票種的座位與總金額是否正確
     let totalPrice = 0
-    const selectedTicketTypesDB = await TicketType.find({_id: {$in: data.ticketTypeIds}})
+    const selectedTicketTypesDB = await TicketType.find({ _id: { $in: data.ticketTypeIds } })
     const selectedTicketTypes = data.ticketTypeIds.map(
-      id=>selectedTicketTypesDB.find(t=>t.id.toString() == id)
+      id => selectedTicketTypesDB.find(t => t.id.toString() == id)
     )
-    selectedTicketTypes.forEach(selectedTicketType=>{
+    selectedTicketTypes.forEach(selectedTicketType => {
       totalPrice += selectedTicketType.price
     })
-    if(data.price != totalPrice)return new ErrorHandler(400,"價錢與選擇票種不符")
+    if (data.price != totalPrice) return new ErrorHandler(400, "價錢與選擇票種不符")
     //讀出場次影廳的座位,確認是否有該座位,確認座位是否被選取
-    const selectedSeats = selectedSession.seats.filter(seat=>{
+    const selectedSeats = selectedSession.seats.filter(seat => {
       return data.seats.some(c => c.row == seat.row && c.col == seat.col)
     })
-    if(data.seats.length != selectedSeats.length) return new ErrorHandler(400,"座位選擇數量錯誤")
-    selectedSeats.forEach(seat=>{
-      if(seat.status!=0) return new ErrorHandler(400,"部分座位已被選取")
+    if (data.seats.length != selectedSeats.length) return new ErrorHandler(400, "座位選擇數量錯誤")
+    selectedSeats.forEach(seat => {
+      if (seat.status != 0) return new ErrorHandler(400, "部分座位已被選取")
     })
     return ""
   }
@@ -124,22 +124,22 @@ export class BookingService {
     //get user email from JWT
     const decode = await jwt.verify(authToken, process.env.JWT_SECRET, { complete: false });
     //get selected TicketTypes
-    const selectedTicketTypes = await TicketType.find({_id: {$in: data.ticketTypeIds}})
+    const selectedTicketTypes = await TicketType.find({ _id: { $in: data.ticketTypeIds } })
 
     const add = {
-      ticketTypeName:data.ticketTypeIds.map(tid=>selectedTicketTypes.find(t=>t._id.toString() == tid)?.name),//["雙人吉拿套票","全票"],//前端給
-      seats:data.seats.map(seat=>`${seat.col}排${seat.row}`),//["8排7","8排8"],//前端給
-      price:data.price,//前端給
+      ticketTypeName: data.ticketTypeIds.map(tid => selectedTicketTypes.find(t => t._id.toString() == tid)?.name),//["雙人吉拿套票","全票"],//前端給
+      seats: data.seats.map(seat => `${seat.col}排${seat.row}`),//["8排7","8排8"],//前端給
+      price: data.price,//前端給
       orderId: uuid4().replace(/-/g, '').slice(0, 20).toLowerCase(),//這裡產生,20碼英數字
       payMethod: "未付款",//未付款
       orderDatetime: getDataTime(),//這裡產生
       status: "未付款",
       sessionId: data.sessionId//from headers
     }
-    
+
     const createResult: any = await Order.create(add)
 
-    await User.findOneAndUpdate({email:decode.email.toLowerCase()},{$addToSet:{orderId:createResult._id}})
+    await User.findOneAndUpdate({ email: decode.email.toLowerCase() }, { $addToSet: { orderId: createResult._id } })
 
     const payData: any = {
       MerchantID: '3002607',
@@ -156,18 +156,40 @@ export class BookingService {
       NeedExtraPaidInfo: 'N'
     }
 
-    payData.CheckMacValue = generateCheckMacValue(payData,settings.ECPAY.ECPAY_HASHKEY,settings.ECPAY.ECPAY_HASHIV)
+    payData.CheckMacValue = generateCheckMacValue(payData, settings.ECPAY.ECPAY_HASHKEY, settings.ECPAY.ECPAY_HASHIV)
 
     return payData;
   }
 
   async completedPay(body: any): Promise<Object> {
+    //訂票紀錄狀態變更為未取票
     await Order.findOneAndUpdate({ orderId: body.MerchantTradeNo }, { payMethod: getPayMethodFromEcpay(body.PaymentType), status: "未取票" })
+
+    //#region 變更座位變更為已販售
+    const order = await Order.findOne({ orderId: body.MerchantTradeNo })
+    const searchSeats = order?.seats.map((seat,i) => {
+      const [colStr, rowStr] = seat.split("排");
+      const col = Number(colStr);
+      const row = Number(rowStr);
+      return {[`elem${i}.col`]: col, [`elem${i}.row`]: row };
+    })
+    const newStatus = 1;
+    const updateObj = {};
+    order?.seats.forEach((rc, i) => {
+      updateObj[`seats.$[elem${i}].status`] = newStatus;
+    });
+
+    await Session.updateOne(
+      { _id: order?.sessionId },
+      { $set: updateObj },
+      { arrayFilters: searchSeats }
+    )
+    //#endregion
     return '1|OK'
   }
 
   async reHashData(orderId: any): Promise<Object> {
-    const order:any = await Order.findOne({orderId})
+    const order: any = await Order.findOne({ orderId })
 
     const payData: any = {
       MerchantID: '3002607',
@@ -184,7 +206,7 @@ export class BookingService {
       NeedExtraPaidInfo: 'N'
     }
 
-    payData.CheckMacValue = generateCheckMacValue(payData,settings.ECPAY.ECPAY_HASHKEY,settings.ECPAY.ECPAY_HASHIV)
+    payData.CheckMacValue = generateCheckMacValue(payData, settings.ECPAY.ECPAY_HASHKEY, settings.ECPAY.ECPAY_HASHIV)
 
     return payData;
   }
