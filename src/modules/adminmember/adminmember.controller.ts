@@ -20,10 +20,14 @@ export async function getAllMember(
     const search =
       req.query.q !== undefined ? { name: new RegExp(req.query.q) } : {};
     const timeSort = req.query.sort === "asc" ? "createdAt" : "-createdAt";
-    const result = await User.find(search).sort(timeSort);
+    const result = await User.find(search)
+      .populate({
+        path: "orderId",
+      })
+      .sort(timeSort);
     successHandler(res, result);
-  } catch (error) {
-    service.handleError(res, "請求失敗");
+  } catch (error: any) {
+    service.handleError(res, error.message);
   }
 }
 
@@ -40,7 +44,9 @@ export async function getOneMember(
 ): Promise<void> {
   try {
     const { id } = req.params;
-    const result: any = await User.findById(id);
+    const result: any = await User.findById(id).populate({
+      path: "orderId",
+    });
     successHandler(res, result);
   } catch (error) {
     service.handleError(res, "請求失敗");
