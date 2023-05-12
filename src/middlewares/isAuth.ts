@@ -41,10 +41,6 @@ const isAuth = async (req, res, next) => {
       next
     );
   }
-  // 目前沒有其他驗證token為當下的使用者所有的設計，後續需要增加。
-  if (req.body.email && req.body.email !== email) {
-    return handleErrorMiddleware(new ErrorHandler(401, 'JWT Token驗證失敗'), req, res, next)
-  }
   next();
 };
 

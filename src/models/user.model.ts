@@ -55,6 +55,10 @@ const userSchema = new Schema<IUser>(
     enable: {
       type: Boolean,
     },
+    roles: {
+      type: [String],
+      required: true
+    },
     orderId: [
       {
         type: Schema.Types.ObjectId,
