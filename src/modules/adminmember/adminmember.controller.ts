@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { AdminmemberService } from "./services";
 import successHandler from "@middlewares/success_handler";
 import User from "@models/user.model";
+import _ from "lodash";
+import bcrypt from "bcryptjs";
 
 const service = new AdminmemberService();
 
@@ -65,16 +67,24 @@ export async function postMember(
   next: NextFunction
 ): Promise<void> {
   try {
+    //建立帳號email、密碼是必填存在
     const body = req.body;
-    const { name, email, password, passwordCheck } = body;
-    if (password !== passwordCheck) {
-      service.handleError(res, "密碼不一致");
+    const { name, email, sex, birth, mobile, hobby, password } = body;
+    service.checkMemberRequireField({
+      checkArr: ["email", "password"],
+      body
+    });
+    if(password.length < 8){
+      throw new Error(`請輸入密碼長度大於8`);
     }
+    const hashPassword: string = await bcrypt.hash(password, 12);
+    const newProfile = _.omitBy(
+      { email, name, sex, birth, mobile, hobby },
+      _.isEmpty
+    );
     const result = await User.create({
-      name: name,
-      email: email,
-      password: password,
-      passwordCheck: passwordCheck,
+      ...newProfile,
+      password:hashPassword
     });
     successHandler(res, result);
   } catch (error: any) {
@@ -94,15 +104,26 @@ export async function updateMember(
   next: NextFunction
 ): Promise<void> {
   try {
+    //更新email不可為空
     const { id } = req.params;
     const body = req.body;
-    const { password, passwordCheck } = body;
-    if (!!password || (!!passwordCheck && password !== passwordCheck)) {
-      service.handleError(res, "密碼不一致");
-    }
-    const result: any = await User.findByIdAndUpdate(id, {
-      ...body,
+    const { name, email, sex, birth, mobile, hobby } = body;
+    service.checkMemberRequireField({
+      checkArr: ["email"],
+      body,
     });
+    const newProfile = _.omitBy(
+      { name, email, sex, birth, mobile, hobby },
+      _.isEmpty
+    );
+    if (_.isEmpty(newProfile)) throw new Error("沒有需要更新的資料");
+    const result: any = await User.findByIdAndUpdate(
+      id,
+      {
+        $set: { ...newProfile },
+      },
+      { new: true }
+    );
     successHandler(res, result);
   } catch (error: any) {
     service.handleError(res, error.message);
