@@ -1,4 +1,4 @@
-import { check } from 'express-validator';
+import { check } from "express-validator";
 
 export const loginValidators = [
     check('email').notEmpty().withMessage('email不可為空'),

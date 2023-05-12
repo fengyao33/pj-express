@@ -1,7 +1,7 @@
 import { ErrorHandler, handleErrorMiddleware } from '@middlewares/error_handler';
+import generateJWT from '@utils/generateJWT';
 import { NextFunction, Request, Response } from 'express';
 import successHandler from '../../middlewares/success_handler';
-import generateJWT from '@utils/generateJWT';
 import { AdminauthService } from './services';
 
 /**

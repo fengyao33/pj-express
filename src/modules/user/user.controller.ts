@@ -12,24 +12,32 @@ import { UserauthService } from './services';
  * @param res
  * @param next
  */
-export async function singup(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function singup(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
   try {
-    const { email, password, passwordCheck } = req.body
+    const { email, password, passwordCheck } = req.body;
     if (password !== passwordCheck) {
       res.status(400).json({
-        status: 'fail',
-        message: "密碼不一致"
-      })
+        status: "fail",
+        message: "密碼不一致",
+      });
     }
     const finder = new UserauthService();
     const result: any = await finder.signup(email, password);
     delete result.password;
     const token = generateJWT(email);
-    successHandler(res, {
-      _id: result._id,
-      email: result.email,
-      token
-    }, 201)
+    successHandler(
+      res,
+      {
+        _id: result._id,
+        email: result.email,
+        token,
+      },
+      201
+    );
   } catch (error: any) {
     // MongoDB validate email dupliucated!
     if (error.code === 11000) {
@@ -53,19 +61,27 @@ export async function singup(req: Request, res: Response, next: NextFunction): P
  * @param res
  * @param next
  */
-export async function login(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function login(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
   try {
-    const { email, password } = req.body
-    const finder = new UserauthService()
+    const { email, password } = req.body;
+    const finder = new UserauthService();
     const result: any = await finder.login(email, password);
     const token = generateJWT(email);
-    successHandler(res, {
-      _id: result._id,
-      email: result.email,
-      token
-    }, 200)
+    successHandler(
+      res,
+      {
+        _id: result._id,
+        email: result.email,
+        token,
+      },
+      200
+    );
   } catch (error: any) {
-    handleErrorMiddleware(new ErrorHandler(400, error.message), req, res, next)
+    handleErrorMiddleware(new ErrorHandler(400, error.message), req, res, next);
   }
 }
 
@@ -75,22 +91,35 @@ export async function login(req: Request, res: Response, next: NextFunction): Pr
  * @param res
  * @param next
  */
-export async function updatePassword(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function updatePassword(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
   try {
-    const { email, password, passwordCheck } = req.body
+    const { email, password, passwordCheck } = req.body;
     if (password !== passwordCheck) {
-      handleErrorMiddleware(new ErrorHandler(400, '密碼不一致'), req, res, next)
+      handleErrorMiddleware(
+        new ErrorHandler(400, "密碼不一致"),
+        req,
+        res,
+        next
+      );
     }
     const updater = new UserauthService();
     const result: any = await updater.updatePassword(email, password);
     const token = generateJWT(email);
-    successHandler(res, {
-      _id: result._id,
-      email: result.email,
-      token
-    }, 200)
+    successHandler(
+      res,
+      {
+        _id: result._id,
+        email: result.email,
+        token,
+      },
+      200
+    );
   } catch (error: any) {
-    handleErrorMiddleware(new ErrorHandler(400, error.message), req, res, next)
+    handleErrorMiddleware(new ErrorHandler(400, error.message), req, res, next);
   }
 }
 
@@ -118,8 +147,8 @@ export async function getProfile(req: Request, res: Response): Promise<void> {
   } catch (error: any) {
     res.status(404).json({
       status: "fail",
-      message: error.message
-    })
+      message: error.message,
+    });
   }
 }
 
@@ -129,20 +158,27 @@ export async function getProfile(req: Request, res: Response): Promise<void> {
  * @param res
  * @param next
  */
-export async function updateProfile(req: Request, res: Response): Promise<void> {
+export async function updateProfile(
+  req: Request,
+  res: Response
+): Promise<void> {
   try {
     const { name, email, sex, birth, mobile, hobby } = req.body;
-    const newProfile = _.omitBy({ name, sex, birth, mobile, hobby }, _.isEmpty)
+    const newProfile = _.omitBy({ name, sex, birth, mobile, hobby }, _.isEmpty);
     const updater = new UserauthService();
     const result: any = await updater.updateProfile(email, newProfile);
-    successHandler(res, {
-      email,
-      ...newProfile
-    }, 200)
+    successHandler(
+      res,
+      {
+        email,
+        ...newProfile,
+      },
+      200
+    );
   } catch (error: any) {
     res.status(404).json({
       status: "fail",
-      message: error.message
-    })
+      message: error.message,
+    });
   }
 }
