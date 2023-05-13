@@ -1,12 +1,10 @@
-import {
-  ErrorHandler,
-  handleErrorMiddleware,
-} from "@middlewares/error_handler";
-import successHandler from "@middlewares/success_handler";
-import { NextFunction, Request, Response } from "express";
-import _ from "lodash";
-import generateJWT from "../../utils/generateJWT";
-import { UserauthService } from "./services";
+import { ErrorHandler, handleErrorMiddleware } from '@middlewares/error_handler';
+import successHandler from '@middlewares/success_handler';
+import generateJWT from '@utils/generateJWT';
+import { NextFunction, Request, Response } from 'express';
+import _ from 'lodash';
+import { UserauthService } from './services';
+
 
 /**
  * User Sign Up
@@ -41,11 +39,19 @@ export async function singup(
       201
     );
   } catch (error: any) {
+    // MongoDB validate email dupliucated!
     if (error.code === 11000) {
-      // MongoDB validate email dupliucated!
-      error.message = "此帳號已存在";
+      error.message = '此帳號已存在'
+    };
+    // env lost JWT_EXPIRE_DAYS
+    if (error.message === '"expiresIn" should be a number of seconds or string representing a timespan') {
+      handleErrorMiddleware(new Error('lost JWT_EXPIRE_DAYS'), req, res, next)
     }
-    handleErrorMiddleware(new ErrorHandler(400, error.message), req, res, next);
+    // env lost JWT_SECRET
+    if (error.message === 'secretOrPrivateKey must have a value') {
+      handleErrorMiddleware(new Error('lost JWT_SECRET'), req, res, next)
+    }
+    handleErrorMiddleware(new ErrorHandler(400, error.message), req, res, next)
   }
 }
 
@@ -128,19 +134,16 @@ export async function getProfile(req: Request, res: Response): Promise<void> {
     const { email: userEmail } = req.params;
     const finder = new UserauthService();
     const result: any = await finder.getProfile(userEmail);
-    const { name, email, sex, birth, mobile, hobby } = result;
-    successHandler(
-      res,
-      {
-        name,
-        email,
-        sex,
-        birth,
-        mobile,
-        hobby,
-      },
-      200
-    );
+    const { name, email, sex, birth, mobile, hobby, roles } = result
+    successHandler(res, {
+      name,
+      email,
+      sex,
+      birth,
+      mobile,
+      hobby,
+      roles
+    }, 200)
   } catch (error: any) {
     res.status(404).json({
       status: "fail",

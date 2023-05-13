@@ -1,7 +1,6 @@
 import User from "@models/user.model";
 import bcrypt from "bcryptjs";
 import _ from "lodash";
-import { v4 as uuid4 } from "uuid";
 
 interface NewProfile {
   name: string;
@@ -9,16 +8,13 @@ interface NewProfile {
   mobile: string;
   birth: Date;
   hobby: [string];
+  roles: [string];
 }
 export class UserauthService {
   async signup(email: string, password: string): Promise<Object> {
     const hashPassword: string = await bcrypt.hash(password, 12);
-    const result = await User.create({
-      id: uuid4(),
-      email,
-      password: hashPassword,
-    });
-    return result;
+    const result = await User.create({ email, password: hashPassword, roles: ['user'] });
+    return result
   }
 
   async login(email: string, password: string) {

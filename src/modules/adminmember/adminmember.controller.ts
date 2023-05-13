@@ -20,7 +20,7 @@ export async function getAllMember(
 ): Promise<void> {
   try {
     const search =
-      req.query.q !== undefined ? { name: new RegExp(req.query.q) } : {};
+      req.query.q !== undefined ? { name: new RegExp(req.query.q as string) } : {};
     const timeSort = req.query.sort === "asc" ? "createdAt" : "-createdAt";
     const result = await User.find(search)
       .populate({

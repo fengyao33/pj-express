@@ -1,5 +1,5 @@
-import mongoose from 'mongoose'
 import { settings } from '@config/settings'
+import mongoose from 'mongoose'
 
 mongoose
   .connect(settings.DB.URI!, {

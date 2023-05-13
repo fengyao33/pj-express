@@ -17,8 +17,8 @@ export async function getAllMovies(
   next: NextFunction
 ): Promise<void> {
   try {
-    const pageNo = parseInt(req.query.pageNo) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 10;
+    const pageNo = parseInt(req.query.pageNo as string) || 1;
+    const pageSize = parseInt(req.query.pageSize as string) || 10;
     const skip = (pageNo - 1) * pageSize;
     const result = await MoviesShelf.find().skip(skip).limit(pageSize);
     const tableParams:object = await service.getTableParams({

@@ -9,7 +9,7 @@ export async function index(
   const finder = new MoviesshelfService();
   const { id, branch, hell, sdate, edate } = req.query;
   const result = await (id
-    ? finder.findOne(id, sdate, edate)
+    ? finder.findOne(id as string, sdate as string, edate as string)
     : finder.findAll());
   res.json({
     message: "success",

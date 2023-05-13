@@ -25,14 +25,8 @@ const isAuth = async (req, res, next) => {
   const tokenDecode: JwtToken = await new Promise((resolve, reject) => {
     jwt.verify(token, settings.JWT.JWT_SECRET, (error, payload) => {
       if (error) {
-        console.log("error:", error);
-        reject(error);
-        return handleErrorMiddleware(
-          new ErrorHandler(401, "JWT Token驗證失敗"),
-          req,
-          res,
-          next
-        );
+        reject(error)
+        return handleErrorMiddleware(new ErrorHandler(401, 'JWT Token驗證失敗'), req, res, next)
       } else {
         resolve(payload);
       }
@@ -42,15 +36,6 @@ const isAuth = async (req, res, next) => {
   if (Date.now() >= exp * 1000) {
     return handleErrorMiddleware(
       new ErrorHandler(401, "JWT Token過期"),
-      req,
-      res,
-      next
-    );
-  }
-  // 目前沒有其他驗證token為當下的使用者所有的設計，後續需要增加。
-  if (req.body.email && req.body.email !== email) {
-    return handleErrorMiddleware(
-      new ErrorHandler(401, "JWT Token驗證失敗"),
       req,
       res,
       next
