@@ -90,7 +90,7 @@ export async function postMember(
     //建立帳號email、密碼是必填存在
     const body = req.body;
     const { name, email, sex, birth, mobile, hobby, password } = body;
-    service.checkMemberRequireField({
+    checkRequireField({
       checkArr: ["email", "password"],
       obj: body,
     });
@@ -128,7 +128,7 @@ export async function updateMember(
     const { id } = req.params;
     const body = req.body;
     const { name, email, sex, birth, mobile, hobby } = body;
-    service.checkMemberRequireField({
+    checkRequireField({
       checkArr: ["email"],
       obj: body,
     });
