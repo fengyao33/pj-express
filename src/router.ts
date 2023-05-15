@@ -6,6 +6,7 @@ import AdminUserRouter from './modules/adminauth/adminauth.routes';
 import UserRouter from '@modules/user/user.routes';
 import adminMember from '@modules/adminmember/adminmember.routes';
 import adminMovies from "@modules/adminmovies/adminmovies.routes";
+import activities from "@modules/activities/activities.routes";
 
 import SessionsRouter from '@modules/sessions/sessions.routes';
 import TheatersRouter from '@modules/theaters/theaters.routes';
@@ -16,6 +17,7 @@ router.get('/', (req, res) => {
     return res.json({ Server: 'on' });
 });
 router.use('/admin/moviesShelf', moviesShelf)
+router.use('/admin/activities', activities)
 router.use('/user', UserRouter);
 router.use('/admin/user', AdminUserRouter);
 router.use("/admin/member", adminMember);
