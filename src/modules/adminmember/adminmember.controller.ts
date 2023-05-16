@@ -4,6 +4,12 @@ import successHandler from "@middlewares/success_handler";
 import User from "@models/user.model";
 import _ from "lodash";
 import bcrypt from "bcryptjs";
+import getTableParams from "@utils/getTableParams";
+import {
+  ErrorHandler,
+  handleErrorMiddleware,
+} from "@middlewares/error_handler";
+import checkRequireField from "@utils/checkRequireField";
 
 const service = new AdminmemberService();
 
@@ -19,17 +25,31 @@ export async function getAllMember(
   next: NextFunction
 ): Promise<void> {
   try {
-    const search =
-      req.query.q !== undefined ? { name: new RegExp(req.query.q as string) } : {};
-    const timeSort = req.query.sort === "asc" ? "createdAt" : "-createdAt";
-    const result = await User.find(search)
+    const { search, sort, pageNo, pageSize } = req.query;
+    checkRequireField({
+      checkArr: ["pageNo", "pageSize"],
+      obj: req.query,
+    });
+    const mySearchObj =
+      search !== undefined ? { name: new RegExp(search as string) } : {};
+    const timeSort = sort === "asc" ? "createdAt" : "-createdAt";
+    const skip = (pageNo - 1) * pageSize;
+    const result = await User.find(mySearchObj)
+      .skip(skip)
       .populate({
         path: "orderId",
       })
-      .sort(timeSort);
-    successHandler(res, result);
+      .sort(timeSort)
+      .limit(pageSize);
+    const tableParams: object = await getTableParams({
+      model: User,
+      pageNo: parseInt(pageNo),
+      pageSize: parseInt(pageSize),
+      searchObj: mySearchObj,
+    });
+    successHandler(res, result, 200, tableParams);
   } catch (error: any) {
-    service.handleError(res, error.message);
+    handleErrorMiddleware(new ErrorHandler(400, error.message), req, res, next);
   }
 }
 
@@ -50,8 +70,8 @@ export async function getOneMember(
       path: "orderId",
     });
     successHandler(res, result);
-  } catch (error) {
-    service.handleError(res, "請求失敗");
+  } catch (error: any) {
+    handleErrorMiddleware(new ErrorHandler(400, error.message), req, res, next);
   }
 }
 
@@ -70,11 +90,11 @@ export async function postMember(
     //建立帳號email、密碼是必填存在
     const body = req.body;
     const { name, email, sex, birth, mobile, hobby, password } = body;
-    service.checkMemberRequireField({
+    checkRequireField({
       checkArr: ["email", "password"],
-      body
+      obj: body,
     });
-    if(password.length < 8){
+    if (password.length < 8) {
       throw new Error(`請輸入密碼長度大於8`);
     }
     const hashPassword: string = await bcrypt.hash(password, 12);
@@ -84,11 +104,11 @@ export async function postMember(
     );
     const result = await User.create({
       ...newProfile,
-      password:hashPassword
+      password: hashPassword,
     });
     successHandler(res, result);
   } catch (error: any) {
-    service.handleError(res, error.message);
+    handleErrorMiddleware(new ErrorHandler(400, error.message), req, res, next);
   }
 }
 
@@ -108,9 +128,9 @@ export async function updateMember(
     const { id } = req.params;
     const body = req.body;
     const { name, email, sex, birth, mobile, hobby } = body;
-    service.checkMemberRequireField({
+    checkRequireField({
       checkArr: ["email"],
-      body,
+      obj: body,
     });
     const newProfile = _.omitBy(
       { name, email, sex, birth, mobile, hobby },
@@ -126,7 +146,7 @@ export async function updateMember(
     );
     successHandler(res, result);
   } catch (error: any) {
-    service.handleError(res, error.message);
+    handleErrorMiddleware(new ErrorHandler(400, error.message), req, res, next);
   }
 }
 
@@ -145,8 +165,8 @@ export async function delOneMember(
     const { id } = req.params;
     const result: any = await User.findByIdAndDelete(id);
     successHandler(res, result);
-  } catch (error) {
-    service.handleError(res, "請求失敗");
+  } catch (error: any) {
+    handleErrorMiddleware(new ErrorHandler(400, error.message), req, res, next);
   }
 }
 export async function delAllMember(
@@ -157,7 +177,7 @@ export async function delAllMember(
   try {
     const result: any = await User.deleteMany({});
     successHandler(res, result);
-  } catch (error) {
-    service.handleError(res, "請求失敗");
+  } catch (error: any) {
+    handleErrorMiddleware(new ErrorHandler(400, error.message), req, res, next);
   }
 }

@@ -3,6 +3,8 @@ import { AdminmoviesService } from "./services";
 import MoviesShelf from "@models/moviesshelf.model";
 import successHandler from "@middlewares/success_handler";
 import { ErrorHandler, handleErrorMiddleware } from "@middlewares/error_handler";
+import checkRequireField from "@utils/checkRequireField";
+import getTableParams from "@utils/getTableParams";
 
 const service = new AdminmoviesService();
 /**
@@ -17,18 +19,34 @@ export async function getAllMovies(
   next: NextFunction
 ): Promise<void> {
   try {
-    const pageNo = parseInt(req.query.pageNo as string) || 1;
-    const pageSize = parseInt(req.query.pageSize as string) || 10;
-    const skip = (pageNo - 1) * pageSize;
-    const result = await MoviesShelf.find().skip(skip).limit(pageSize);
-    const tableParams:object = await service.getTableParams({
-      model: MoviesShelf,
-      pageNo,
-      pageSize,
+    const { search, sort, pageNo, pageSize } = req.query;
+    checkRequireField({
+      checkArr: ["pageNo", "pageSize"],
+      obj: req.query,
     });
-    successHandler(res, result,200, tableParams);
-  } catch (error) {
-    handleErrorMiddleware(new ErrorHandler(400, "請求失敗"), req, res, next);
+    const mySearchObj =
+      search !== undefined
+        ? {
+            movieCName: new RegExp(search as string),
+            movieEName: new RegExp(search as string),
+          }
+        : {};
+    const inTheatersTimeSort =
+      sort === "asc" ? "inTheatersTimeSort" : "-inTheatersTimeSort";
+    const skip = (pageNo - 1) * pageSize;
+    const result = await MoviesShelf.find()
+      .skip(skip)
+      .sort(inTheatersTimeSort)
+      .limit(pageSize);
+    const tableParams: object = await getTableParams({
+      model: MoviesShelf,
+      pageNo: parseInt(pageNo),
+      pageSize: parseInt(pageSize),
+      searchObj: mySearchObj,
+    });
+    successHandler(res, result, 200, tableParams);
+  } catch (error: any) {
+    handleErrorMiddleware(new ErrorHandler(400, error.message), req, res, next);
   }
 }
 
