@@ -39,7 +39,7 @@ class Server {
   }
 
   routes() {
-    this.app.use(routes)
+    this.app.use('/api', routes)
     this.app.use(handleErrorMiddleware)
     this.app.use(handleError404Middleware)
     this.app.use(handleCatchError)

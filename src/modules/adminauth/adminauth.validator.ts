@@ -1,5 +1,6 @@
-import { check } from 'express-validator';
+import { check } from "express-validator";
 
-export const storeValidators = [];
-
-export const updateValidators = [];
+export const loginValidators = [
+    check('email').notEmpty().withMessage('email不可為空'),
+    check('password').notEmpty().withMessage('password不可為空')
+];
