@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response } from 'express'
-import { TheatersService } from './services'
-import successHandler from '@middlewares/success_handler'
+import { NextFunction, Request, Response } from 'express';
+import { TheatersService } from './services';
+import successHandler from '@middlewares/success_handler';
 
 /**
  * Return all entities
@@ -9,8 +9,9 @@ import successHandler from '@middlewares/success_handler'
  * @param next
  */
 export async function index(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const finder = new TheatersService()
-  successHandler(res, await finder.findAll())
+  const finder = new TheatersService();
+  console.log('這是一個測試');
+  successHandler(res, await finder.findAll());
 }
 
 /**
@@ -20,8 +21,8 @@ export async function index(req: Request, res: Response, next: NextFunction): Pr
  * @param next
  */
 export async function show(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const { id } = req.params
-  const finder = new TheatersService()
+  const { id } = req.params;
+  const finder = new TheatersService();
 }
 
 /**
@@ -31,7 +32,7 @@ export async function show(req: Request, res: Response, next: NextFunction): Pro
  * @param next
  */
 export async function store(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const saver = new TheatersService()
+  const saver = new TheatersService();
 }
 
 /**
@@ -41,8 +42,8 @@ export async function store(req: Request, res: Response, next: NextFunction): Pr
  * @param next
  */
 export async function update(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const { id } = req.params
-  const updater = new TheatersService()
+  const { id } = req.params;
+  const updater = new TheatersService();
 }
 
 /**
@@ -52,6 +53,6 @@ export async function update(req: Request, res: Response, next: NextFunction): P
  * @param next
  */
 export async function destroy(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const { id } = req.params
-  const destroyer = new TheatersService()
+  const { id } = req.params;
+  const destroyer = new TheatersService();
 }
