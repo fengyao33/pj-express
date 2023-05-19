@@ -18,6 +18,8 @@ router.get('/', (req, res) => {
   return res.json({ Server: 'on' });
 });
 router.use('/admin/moviesShelf', moviesShelf);
+router.use('/movies', moviesShelf);
+// router.use('/activity', moviesShelf);
 router.use('/user', UserRouter);
 router.use('/admin/user', AdminUserRouter);
 router.use('/admin/member', adminMember);
