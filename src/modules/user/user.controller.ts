@@ -129,7 +129,7 @@ export async function updatePassword(
  * @param res
  * @param next
  */
-export async function getProfile(req: Request, res: Response): Promise<void> {
+export async function getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const { email: userEmail } = req.params;
     const finder = new UserauthService();
@@ -145,10 +145,7 @@ export async function getProfile(req: Request, res: Response): Promise<void> {
       roles
     }, 200)
   } catch (error: any) {
-    res.status(404).json({
-      status: "fail",
-      message: error.message,
-    });
+    handleErrorMiddleware(new ErrorHandler(404, error.message), req, res, next)
   }
 }
 
@@ -160,7 +157,8 @@ export async function getProfile(req: Request, res: Response): Promise<void> {
  */
 export async function updateProfile(
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ): Promise<void> {
   try {
     const { name, email, sex, birth, mobile, hobby } = req.body;
@@ -176,9 +174,7 @@ export async function updateProfile(
       200
     );
   } catch (error: any) {
-    res.status(404).json({
-      status: "fail",
-      message: error.message,
-    });
+    if (error.message === '沒有需要更新的資料') error.statusCode = 404
+    handleErrorMiddleware(new ErrorHandler(error.statusCode || 400, error.message), req, res, next)
   }
 }

@@ -3,10 +3,10 @@ import moviesShelf from '@modules/moviesshelf/moviesshelf.routes';
 import { Router } from 'express';
 import AdminUserRouter from './modules/adminauth/adminauth.routes';
 
-import UserRouter from '@modules/user/user.routes';
+import activities from "@modules/activities/activities.routes";
 import adminMember from '@modules/adminmember/adminmember.routes';
 import adminMovies from "@modules/adminmovies/adminmovies.routes";
-import activities from "@modules/activities/activities.routes";
+import UserRouter from '@modules/user/user.routes';
 
 import SessionsRouter from '@modules/sessions/sessions.routes';
 import TheatersRouter from '@modules/theaters/theaters.routes';

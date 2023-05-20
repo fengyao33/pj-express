@@ -10,8 +10,13 @@ interface NewActivity {
 }
 
 export class ActivitiesService {
-  async getActivities() {
-    const result = await Activity.find({});
+  async getActivities(withExpired) {
+    const filters = withExpired === 'true' ? {} : {
+      endDatetime: {
+        $gte: new Date(Date.now()),
+      }
+    }
+    const result = await Activity.find(filters);
     return result
   }
 
@@ -28,6 +33,7 @@ export class ActivitiesService {
 
   async deleteActivity(id: string) {
     const result = await Activity.deleteOne({ _id: id });
+    if (result.deletedCount === 0) throw new Error("該筆資料不存在");
     return result
   }
 }
