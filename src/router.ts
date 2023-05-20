@@ -3,7 +3,7 @@ import moviesShelf from '@modules/moviesshelf/moviesshelf.routes';
 import { Router } from 'express';
 import AdminUserRouter from './modules/adminauth/adminauth.routes';
 
-import activities from "@modules/activities/activities.routes";
+import adminaActivities from "@modules/adminactivities/adminactivities.routes";
 import adminMember from '@modules/adminmember/adminmember.routes';
 import adminMovies from "@modules/adminmovies/adminmovies.routes";
 import UserRouter from '@modules/user/user.routes';
@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
     return res.json({ Server: 'on' });
 });
 router.use('/admin/moviesShelf', moviesShelf)
-router.use('/admin/activities', activities)
+router.use('/admin/activities', adminaActivities)
 router.use('/user', UserRouter);
 router.use('/admin/user', AdminUserRouter);
 router.use("/admin/member", adminMember);
