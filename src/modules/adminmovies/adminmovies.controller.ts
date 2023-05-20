@@ -1,10 +1,10 @@
-import { NextFunction, Request, Response } from "express";
-import { AdminmoviesService } from "./services";
-import MoviesShelf from "@models/moviesshelf.model";
-import successHandler from "@middlewares/success_handler";
 import { ErrorHandler, handleErrorMiddleware } from "@middlewares/error_handler";
+import successHandler from "@middlewares/success_handler";
+import MoviesShelf from "@models/moviesshelf.model";
 import checkRequireField from "@utils/checkRequireField";
 import getTableParams from "@utils/getTableParams";
+import { NextFunction, Request, Response } from "express";
+import { AdminmoviesService } from "./services";
 
 const service = new AdminmoviesService();
 /**
@@ -27,21 +27,21 @@ export async function getAllMovies(
     const mySearchObj =
       search !== undefined
         ? {
-            movieCName: new RegExp(search as string),
-            movieEName: new RegExp(search as string),
-          }
+          movieCName: new RegExp(search as string),
+          movieEName: new RegExp(search as string),
+        }
         : {};
     const inTheatersTimeSort =
       sort === "asc" ? "inTheatersTimeSort" : "-inTheatersTimeSort";
-    const skip = (pageNo - 1) * pageSize;
+    const skip = (parseInt(pageNo as string) - 1) * parseInt(pageSize as string);
     const result = await MoviesShelf.find()
       .skip(skip)
       .sort(inTheatersTimeSort)
-      .limit(pageSize);
+      .limit(parseInt(pageSize as string));
     const tableParams: object = await getTableParams({
       model: MoviesShelf,
-      pageNo: parseInt(pageNo),
-      pageSize: parseInt(pageSize),
+      pageNo: parseInt(pageNo as string),
+      pageSize: parseInt(pageSize as string),
       searchObj: mySearchObj,
     });
     successHandler(res, result, 200, tableParams);
