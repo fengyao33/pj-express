@@ -1,12 +1,13 @@
-import { Schema, Document } from 'mongoose';
+import { Schema, Document, model } from 'mongoose';
 import { ISeat, seatSchema } from './seats.model';
 import TicketType from './ticketTypes.model';
 
 export interface IRoom extends Document {
-  name: string;
-  enable: boolean;
-  seats: ISeat[];
-  ticketTypeIds: Schema.Types.ObjectId[];
+  name: string,
+  enable: boolean,
+  seats: ISeat[],
+  ticketTypeIds: Schema.Types.ObjectId[],
+  type: string
 }
 
 export const roomSchema = new Schema<IRoom>({
@@ -18,10 +19,16 @@ export const roomSchema = new Schema<IRoom>({
   ticketTypeIds: {
     type: [Schema.Types.ObjectId],
     required: [true, '票價資訊欄位不可為空'],
-    ref: TicketType.collection.name,
+    ref: TicketType.modelName,
   },
   enable: {
     type: Boolean,
     default: true,
   },
+  type: {
+    type: String,
+    required: [true, '類型名稱不可為空']
+  }
 });
+
+export const Room = model<IRoom>("rooms", roomSchema);

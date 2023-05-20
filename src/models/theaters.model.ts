@@ -8,35 +8,28 @@ export interface ITheater extends Document {
   img: string;
   rooms: IRoom[];
   description: string;
-  traffic: string;
+  traffic: string[];
   enable: boolean;
 }
 
-const theaterSchema = new Schema<ITheater>(
-  {
-    name: { type: String, required: [true, '影城名稱不可為空'], unique: true },
-    address: { type: String, required: [true, '地址欄位不可為空'] },
-    phone: { type: Number, required: [true, '電話欄位不可為空'] },
-    rooms: { type: [roomSchema], required: false },
-    description: {
-      type: String,
-      required: [true, '描述欄位不可為空'],
-    },
-    traffic: {
-      type: String,
-      required: [true, '交通欄位不可為空'],
-    },
-    enable: {
-      type: Boolean,
-      default: true,
-    },
+const theaterSchema = new Schema<ITheater>({
+  name: { type: String, required: [true, '影城名稱不可為空'], unique: true },
+  address: { type: String, required: [true, '地址欄位不可為空'] },
+  phone: { type: Number, required: [true, '電話欄位不可為空'] },
+  rooms: { type: [roomSchema], required: false },
+  description: {
+    type: String,
+    required: [true, '描述欄位不可為空'],
   },
-  {
-    versionKey: false,
-    collection: 'theaters',
-    timestamps: true,
-  }
-);
+  traffic: [{
+    type: String,
+    required: [true, '交通欄位不可為空'],
+  }],
+  enable: {
+    type: Boolean,
+    default: true,
+  },
+});
 
 const Theater = model<ITheater>('theaters', theaterSchema);
 
