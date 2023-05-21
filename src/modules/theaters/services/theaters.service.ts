@@ -1,27 +1,39 @@
 import Theater from "@models/theaters.model"
+import TicketType from "@models/ticketTypes.model"
 
 export class TheatersService {
-  async findOne(id: any): Promise<Object> {
-    return {}
-  }
-
   async findAll(): Promise<Object[]> {
-    return await Theater.find({}).populate({path:"ticketTypeInfoIds"})
-  }
+    const theaters = await Theater.find().populate({ path: "rooms.ticketTypeIds" })
 
-  async update(id: any, body: any): Promise<Object> {
-    return {}
-  }
+    return theaters.map(t => {
+      const ticketInfos = {};
+      t.rooms.forEach(r => {
+        if (r.type in ticketInfos) {
+          ticketInfos[r.type] = [...ticketInfos[r.type], ...r.ticketTypeIds]
+        }
+        else {
+          ticketInfos[r.type] = r.ticketTypeIds
+        }
+      })
 
-  async store(body: any): Promise<Object> {
-    return {}
-  }
-
-  async destroy(id: any): Promise<Object> {
-    return {}
-  }
-
-  async delete(id: any): Promise<Object> {
-    return {}
+      return {
+        name: t.name,
+        address: t.address,
+        phone: t.phone,
+        rooms: t.rooms.length,
+        description: t.description,
+        traffic: t.traffic,
+        ticketPriceInfo: Object.keys(ticketInfos).map((key) => {
+          const ticketTypes = ticketInfos[key]
+          return {
+            type:key,
+            ...ticketTypes.reduce((obj, t) => {
+              obj[t.name] = t.price;
+              return obj;
+            }, {})
+          }
+        })
+      }
+    })
   }
 }

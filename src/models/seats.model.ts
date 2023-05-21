@@ -25,6 +25,8 @@ export const seatSchema = new Schema<ISeat>({
   },
 });
 
+export const Seat = model<ISeat>('seats', seatSchema);
+
 export interface ISeatExample {
   name: string;
   seatTable: ISeat[];

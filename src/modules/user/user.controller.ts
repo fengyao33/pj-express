@@ -178,3 +178,26 @@ export async function updateProfile(
     handleErrorMiddleware(new ErrorHandler(error.statusCode || 400, error.message), req, res, next)
   }
 }
+
+/**
+ * Get User purchaseRecord
+ * @param req
+ * @param res
+ * @param next
+ */
+export async function getPurchaseRecord(req: Request, res: Response): Promise<void> {
+  const finder = new UserauthService()
+  
+  successHandler(res, await finder.getPurchaseRecord(req.headers.authorization.split(' ')[1],req.query.page,req.query.limit))
+}
+
+/**
+ * Get User bonusRecord
+ * @param req
+ * @param res
+ * @param next
+ */
+export async function getBonusRecord(req: Request, res: Response): Promise<void> {
+  const finder = new UserauthService()
+  successHandler(res, await finder.getBonusRecord(req.headers.authorization.split(' ')[1],req.query.page,req.query.limit))
+}
