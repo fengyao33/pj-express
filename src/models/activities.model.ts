@@ -1,45 +1,42 @@
-import mongoose, { Document, Model, Schema, Types } from "mongoose";
-
-export interface IActivities extends Document {
-  createdAt: Date;
-  updatedAt: Date;
-  startDatetime: Date;
-  endDatetime: Date;
+import { Schema, model } from "mongoose";
+interface IActivity {
   title: string;
   content: string;
-  img: string
+  img: string;
+  startDatetime: Date;
+  endDatetime: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export const activities = new Schema<IActivities>({
-  createdAt: {
-    type: Date,
-    required: [true, '時間必填'],
+const activitySchema = new Schema<IActivity>(
+  {
+    title: {
+      type: String,
+      required: [true, "title不可為空"],
+    },
+    content: {
+      type: String,
+      required: [true, "content不可為空"],
+    },
+    img: {
+      type: String,
+    },
+    startDatetime: {
+      type: Date,
+      required: [true, "startDatetime不可為空"]
+    },
+    endDatetime: {
+      type: Date,
+      required: [true, "startDatetime不可為空"]
+    }
   },
-  updatedAt: {
-    type: Date,
-  } ,
-  startDatetime: {
-    type: Date,
-    required: [true, '開始時間未填'],
-  },
-  endDatetime: {
-    type: Date,
-    required: [true, '開始時間未填'],
-  },
-  title:{
-    type: String,
-    required: [true, '標題未填'],
-  },
-  content:{
-    type: String,
-    required: [true, '內容未填'],
-  },
-  img:{
-    type: String,
+  {
+    versionKey: false,
+    collection: "activities",
+    timestamps: true,
   }
-});
+);
+const Activity = model<IActivity>("activities", activitySchema);
 
-const Activities: Model<IActivities> = mongoose.model<
-IActivities>("Activities", activities);
-
-export default Activities;
+export default Activity;
