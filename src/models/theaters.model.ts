@@ -8,7 +8,7 @@ export interface ITheater extends Document {
   img: string;
   rooms: IRoom[];
   description: string;
-  traffic: string[];
+  traffic: string;
   enable: boolean;
 }
 
@@ -21,10 +21,10 @@ const theaterSchema = new Schema<ITheater>({
     type: String,
     required: [true, '描述欄位不可為空'],
   },
-  traffic: [{
+  traffic: {
     type: String,
     required: [true, '交通欄位不可為空'],
-  }],
+  },
   enable: {
     type: Boolean,
     default: true,

@@ -84,7 +84,6 @@ export class UserauthService {
         populate: { path: "sessionId", options: { populate: { path: "theaterId" } } }
       }
     })
-    console.log(user)
     const returnOrders = user.orderId.map(order => {
       return {
         theaterName: order.sessionId.theaterId.name, //影城名稱
@@ -94,8 +93,6 @@ export class UserauthService {
       }
     }).filter(order=>order.status == "未取票" || order.status == "已取票")
     
-    console.log(returnOrders)
-
     const endDateOfThisYear = new Date(new Date().getFullYear(), 11, 31)
     const endDateOfNextYear = new Date(new Date().getFullYear() + 1, 11, 31)
 
