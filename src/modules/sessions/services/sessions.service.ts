@@ -1,10 +1,16 @@
+import { ErrorHandler } from "@middlewares/error_handler"
 import Session, { ISession } from "@models/sessions.model"
 
 export class SessionsService {
-  async findTicketTypesById(id): Promise<Object[]> {
-    const result = await Session.findById(id).populate({
-      path: 'ticketTypeIds'
-    })
+  async findTicketTypesById(id): Promise<ErrorHandler | Object[]> {
+    let result
+    try {
+      result = await Session.findById(id).populate({
+        path: 'ticketTypeIds'
+      })
+    } catch {
+      return new ErrorHandler(400, "找不到場次")
+    }
     return (result as ISession).ticketTypeIds
   }
 
@@ -13,44 +19,41 @@ export class SessionsService {
   }
 
   async findRoomInfoBySessionId(id): Promise<Object> {
-    const result = await Session.findById(id)
-    return (result as ISession).roomInfo
+    let result
+    try {
+      result = await Session.findById(id)
+    } catch {
+      return new ErrorHandler(400, "找不到場次")
+    }
+    return (result as ISession).seats
   }
 
-  async checkSeatsStatusBySessionId(id, seats: Array<{ row: number, col: number }>): Promise<Object> {
+  async checkSeatsStatusBySessionId(id, seats: Array<{ row: number, col: number, situation: string, isSold: boolean }>): Promise<Object> {
     const seatsQ = [...seats]
-    const result = await Session.findById(id)
-    const seatsBySessionId = (result as ISession).roomInfo.seats
+    let result
+    try {
+      result = await Session.findById(id)
+    } catch {
+      return new ErrorHandler(400, "找不到場次")
+    }
+    const seatsBySessionId = (result as ISession).seats
+    let err;
     seatsQ.forEach((q, index) => {
       let isFind = false
-      seatsBySessionId.forEach((seat,indexDB) => {
+      seatsBySessionId.forEach((seat, indexDB) => {
         if (q.row == seat.row && q.col == seat.col) {
           seatsQ[index] = seatsBySessionId[indexDB]
           isFind = true
           return
         }
       })
-      if(!isFind){
-        Object.assign(seatsQ[index],seatsQ[index],{status:-1})
+      if (!isFind) {
+        err = new ErrorHandler(400,`請求的座位資料col=${q.col},row=${q.row} 沒有在此場次座位表中`)
+        return;
       }
     })
-    
-    return seatsQ
-  }
 
-  async update(id: any, body: any): Promise<Object> {
-    return {}
-  }
 
-  async store(body: any): Promise<Object> {
-    return {}
-  }
-
-  async destroy(id: any): Promise<Object> {
-    return {}
-  }
-
-  async delete(id: any): Promise<Object> {
-    return {}
+    return err == undefined?seatsQ:err
   }
 }

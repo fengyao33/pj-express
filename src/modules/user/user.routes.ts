@@ -16,4 +16,7 @@ router.get('/profile/:email', isAuth, Controller.getProfile)
 
 router.patch('/profile', [isAuth, ...updateProfileValidators, validateBody], Controller.updateProfile)
 
+router.get('/purchaseRecord', isAuth, Controller.getPurchaseRecord)
+router.get('/bonusRecord', isAuth, Controller.getBonusRecord)
+
 export default router

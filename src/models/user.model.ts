@@ -62,7 +62,7 @@ const userSchema = new Schema<IUser>(
     orderId: [
       {
         type: Schema.Types.ObjectId,
-        ref: Order.collection.name,
+        ref: Order.modelName,
       },
     ],
   },
