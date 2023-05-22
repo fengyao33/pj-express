@@ -7,14 +7,35 @@ export async function index(
   next: NextFunction
 ): Promise<void> {
   const finder = new MoviesshelfService();
-  const { id, branch, hell, sdate, edate } = req.query;
-  const result = await (id
-    ? finder.findOne(id as string, sdate as string, edate as string)
-    : finder.findAll());
+  const { id, branch, hell, sdate, edate, pageNo, pageSize, isCurrent } = req.query;
+
+  console.log(id, branch, hell, sdate, edate, pageNo, pageSize, isCurrent)
+  
+  let result
+  let skip
+  
+  if (id) {
+    result = await finder.findOne(id as string, sdate as string, edate as string)
+  } else {
+    console.log(111)
+    if(edate && pageNo && pageSize) {
+      skip = (parseInt(pageNo as string) - 1) * parseInt(pageSize as string)
+    }
+
+    result = await finder.findAll(skip, pageSize, isCurrent)
+  }
+
   res.json({
     message: "success",
     data: result,
   });
+  // const result = await (id
+  //   ? finder.findOne(id as string, sdate as string, edate as string)
+  //   : finder.findAll());
+  // res.json({
+  //   message: "success",
+  //   data: result,
+  // });
 }
 
 export async function store(
@@ -35,3 +56,5 @@ export async function update(
   const { id } = req.params;
   const updater = new MoviesshelfService();
 }
+
+
