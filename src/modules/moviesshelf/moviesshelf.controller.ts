@@ -9,15 +9,12 @@ export async function index(
   const finder = new MoviesshelfService();
   const { id, branch, hell, sdate, edate, pageNo, pageSize, isCurrent } = req.query;
 
-  console.log(id, branch, hell, sdate, edate, pageNo, pageSize, isCurrent)
-  
   let result
   let skip
   
   if (id) {
     result = await finder.findOne(id as string, sdate as string, edate as string)
   } else {
-    console.log(111)
     if(edate && pageNo && pageSize) {
       skip = (parseInt(pageNo as string) - 1) * parseInt(pageSize as string)
     }
