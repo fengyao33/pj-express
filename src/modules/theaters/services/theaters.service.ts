@@ -13,6 +13,13 @@ function getTicketInfos(rs: IRoom[]) {
       ticketInfos[r.type] = r.ticketTypeIds
     }
   })
+  //篩type 是電影票
+  Object.keys(ticketInfos).forEach(key=>{
+    ticketInfos[key] = ticketInfos[key].filter(t=>{
+      return t.type == "電影票"
+    })
+  });
+
   return ticketInfos;
 }
 
@@ -50,7 +57,6 @@ export class TheatersService {
     const t: any = await Theater.findOne({ name }).populate({ path: "rooms.ticketTypeIds" })
     if(t==undefined)return new ErrorHandler(400,`找不到影城名稱:${name}`)
     const ticketInfos = getTicketInfos(t.rooms);
-
     return {
       name: t.name,
       address: t.address,
