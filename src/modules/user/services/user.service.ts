@@ -50,14 +50,14 @@ export class UserauthService {
   async getPurchaseRecord(authToken, page, limit): Promise<Object> {
     //get user email from JWT
     const decode = await jwt.verify(authToken, process.env.JWT_SECRET, { complete: false });
-    const user:any = await User.findOne({ email: decode.email.toLowerCase() }).populate({
+    const user: any = await User.findOne({ email: decode.email.toLowerCase() }).populate({
       path: "orderId", options: {
         sort: { orderDatetime: -1 },
         skip: page, limit: limit,
         populate: { path: "sessionId", options: { populate: [{ path: "theaterId" }, { path: "movieId" }, { path: "ticketTypeIds" }] } }
       }
     })
-
+    if(user==undefined)return new ErrorHandler(400,'沒有此User')
     return user.orderId.map(order => {
       return {
         movieName: order.sessionId.movieId.movieCName,//電影名稱
@@ -70,7 +70,8 @@ export class UserauthService {
         orderId: order.orderId,//訂單編號,barcode產生
         payMethod: order.payMethod,//付款方式
         orderDatetime: order.orderDatetime,//訂單時間
-        status: order.status//未取票,已取票,已退票,未付款
+        status: order.status,//未取票,已取票,已退票,未付款
+        movieImgUrl: order.sessionId.movieId.imgUrl//電影海報url
       }
     })
   }
@@ -84,6 +85,7 @@ export class UserauthService {
         populate: { path: "sessionId", options: { populate: { path: "theaterId" } } }
       }
     })
+    if(user==undefined)return new ErrorHandler(400,'沒有此User')
     const returnOrders = user.orderId.map(order => {
       return {
         theaterName: order.sessionId.theaterId.name, //影城名稱
@@ -91,8 +93,7 @@ export class UserauthService {
         orderDate: order.orderDatetime, //訂單時間
         bonus: Math.round(order.price / 10) //點數機制:消費/10
       }
-    }).filter(order=>order.status == "未取票" || order.status == "已取票")
-    
+    }).filter(order => order.status == "未取票" || order.status == "已取票")
     const endDateOfThisYear = new Date(new Date().getFullYear(), 11, 31)
     const endDateOfNextYear = new Date(new Date().getFullYear() + 1, 11, 31)
 

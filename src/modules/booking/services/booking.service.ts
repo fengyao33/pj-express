@@ -51,9 +51,64 @@ function generateCheckMacValue(params: any, hashKey: string, hashIV: string) {
 
 function getPayMethodFromEcpay(PaymentType) {
   switch (PaymentType) {
+    case 'WebATM_TAISHIN':
+      return '台新銀行WebATM(暫不提供)'
+    case 'WebATM_ESUN':
+      return '玉山銀行WebATM(暫不提供)'
+    case 'WebATM_BOT':
+      return '台灣銀行WebATM'
+    case 'WebATM_FUBON':
+      return '台北富邦WebATM(暫不提供)'
+    case 'WebATM_CHINATRUST':
+      return '中國信託WebATM'
+    case 'WebATM_FIRST':
+      return '第一銀行WebATM'
+    case 'WebATM_CATHAY':
+      return '國泰世華WebATM(暫不提供)'
+    case 'WebATM_MEGA':
+      return '兆豐銀行WebATM(暫不提供)'
+    case 'WebATM_LAND':
+      return '土地銀行WebATM'
+    case 'WebATM_TACHONG':
+      return '大眾銀行WebATM(2018年已併到元大銀行)(暫不提供)'
+    case 'WebATM_SINOPAC':
+      return '永豐銀行WebATM(暫不提供)'
+    case 'ATM_TAISHIN':
+      return '台新銀行ATM(暫不提供)'
+    case 'ATM_ESUN':
+      return '玉山銀行ATM(暫不提供)'
+    case 'ATM_BOT':
+      return '台灣銀行ATM'
+    case 'ATM_FUBON':
+      return '台北富邦ATM(暫不提供)'
+    case 'ATM_CHINATRUST':
+      return '中國信託ATM'
+    case 'ATM_FIRST':
+      return '第一銀行ATM'
+    case 'ATM_LAND':
+      return '土地銀行ATM'
+    case 'ATM_CATHAY':
+      return '國泰世華銀行ATM'
+    case 'ATM_TACHONG':
+      return '大眾銀行ATM(2018年已併到元大銀行)(暫不提供)'
+    case 'ATM_PANHSIN':
+      return '板信銀行ATM'
+    case 'CVS_CVS':
+      return '超商代碼繳款'
+    case 'CVS_OK':
+      return 'OK超商代碼繳款'
+    case 'CVS_FAMILY':
+      return '全家超商代碼繳款'
+    case 'CVS_HILIFE':
+      return '萊爾富超商代碼繳款'
+    case 'CVS_IBON':
+      return '7-11 ibon代碼繳款'
+    case 'BARCODE_BARCODE':
+      return '超商條碼繳款'
     case 'Credit_CreditCard':
-      return "信用卡"
-
+      return '信用卡'
+    case 'Flexible_Installment':
+      return '圓夢彈性分期'
     default:
       return "Unknow"
   }
