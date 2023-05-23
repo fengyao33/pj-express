@@ -3,10 +3,12 @@ import { ActivitiesService } from './services'
 
 export async function index(req: Request, res: Response, next: NextFunction): Promise<void> {
   const finder = new ActivitiesService()
-  const { id, branch, hell, sdate, edate } = req.query;
-  const result = await (id
-    ? finder.findOne(id as string)
-    : finder.findAll());
+  const { pageNo, pageSize } = req.query;
+  
+  let skip = (parseInt(pageNo as string) - 1) * parseInt(pageSize as string)
+  
+  const result = await finder.findAll(skip, pageSize)
+
   res.json({
     message: "success",
     data: result,
