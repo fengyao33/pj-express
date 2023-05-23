@@ -6,8 +6,12 @@ export class ActivitiesService {
     return {}
   }
 
-  async findAll(): Promise<Object> {
-    let [errors, result] = await on(Activities.find())
+  async findAll(skip, pageSize): Promise<Object> {
+    let [errors, result] = await on(
+      Activities.find()
+      .skip(skip)
+      .limit(parseInt(pageSize as string))
+    )
     if(errors) {
       throw errors;
     }
