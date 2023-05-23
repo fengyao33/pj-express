@@ -20,6 +20,7 @@ export class TheatersService {
         name: t.name,
         address: t.address,
         phone: t.phone,
+        imgUrl: t.img,
         rooms: t.rooms.length,
         description: t.description,
         traffic: t.traffic,
