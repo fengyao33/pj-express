@@ -1,6 +1,6 @@
 import mongoose, { Document, Model, Schema, Types } from "mongoose";
 type Rating = "G" | "PG" | "R";
-interface IMoviesShelf<T> extends Document {
+export interface IMoviesShelf<T> extends Document {
   isAvaliableL: Boolean,
   imgUrl: String,
   videoUrl: String,

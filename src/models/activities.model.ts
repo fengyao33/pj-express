@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-interface IActivity {
+export interface IActivity {
   title: string;
   content: string;
   img: string;
