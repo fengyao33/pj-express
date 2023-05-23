@@ -25,9 +25,11 @@ export class MoviesshelfService {
       .limit(parseInt(pageSize as string))
     )
 
-    if (isCurrent) {
+    if (isCurrent && result && result.length > 0) {
       const currentTime = new Date();
       result = result.where('time').gt(currentTime);
+    } else {
+       result = []
     }
 
     if(errors) {
