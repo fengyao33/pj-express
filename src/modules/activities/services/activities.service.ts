@@ -7,14 +7,15 @@ export class ActivitiesService {
     return {}
   }
 
+
   async findAll(skip, pageSize, pageNo): Promise<Object> {
     let tableParams: Object
     let [errors, data] = await on(
+
       Activities.find()
       .skip(skip)
       .limit(parseInt(pageSize as string))
     )
-
 
     if (!!pageSize && !!pageNo) { 
       tableParams = await getTableParams({

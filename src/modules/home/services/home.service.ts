@@ -17,6 +17,7 @@ export class HomeService {
     ])
     
     let focusMovie = await MoviesShelf.aggregate<IMoviesShelf<string>>([
+
       {
         $match: {
           $expr: {
@@ -29,14 +30,18 @@ export class HomeService {
       },
       { $limit: 10 }
     ])  
+
     let banner  = await MoviesShelf.aggregate<IMoviesShelf<string>>([
+
       {
         $match: {
           $expr: {
             $and: [
               { $gt: [today, "$inTheatersTime"] },
               { $gt: [today, "$outOfTheatersTime"] },
+
               // { $lte: ["$inTheatersTime", today, dateLimit] }
+
             ]
           }
         }
@@ -52,6 +57,7 @@ export class HomeService {
     ])  
 
     let date = { activity, movieList, focusMovie, banner }
+
 
     return date
   }
