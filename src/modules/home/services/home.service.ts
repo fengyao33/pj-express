@@ -8,15 +8,15 @@ export class HomeService {
     const dateLimit = new Date();
     dateLimit.setDate(today.getDate() - 10);
     
-    const activity = await Activities.aggregate<IActivity>([
-      { $limit: 10 }
+    let activity = await Activities.aggregate<IActivity>([
+      { $limit: 20 }
     ])  
 
-    const movieList = MoviesShelf.aggregate<IMoviesShelf<string>>([
+    let movieList = await MoviesShelf.aggregate<IMoviesShelf<string>>([
       { $limit: 20 }
     ])
-
-    const focusMovie = await MoviesShelf.aggregate<IMoviesShelf<string>>([
+    
+    let focusMovie = await MoviesShelf.aggregate<IMoviesShelf<string>>([
       {
         $match: {
           $expr: {
@@ -29,15 +29,14 @@ export class HomeService {
       },
       { $limit: 10 }
     ])  
-
-    const banner  = await MoviesShelf.aggregate<IMoviesShelf<string>>([
+    let banner  = await MoviesShelf.aggregate<IMoviesShelf<string>>([
       {
         $match: {
           $expr: {
             $and: [
               { $gt: [today, "$inTheatersTime"] },
               { $gt: [today, "$outOfTheatersTime"] },
-              { $lte: ["$inTheatersTime", today, dateLimit] }
+              // { $lte: ["$inTheatersTime", today, dateLimit] }
             ]
           }
         }
@@ -52,8 +51,7 @@ export class HomeService {
       { $limit: 10 }
     ])  
 
-    const date = { activity, movieList, focusMovie, banner }
-    
+    let date = { activity, movieList, focusMovie, banner }
 
     return date
   }
