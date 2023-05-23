@@ -6,5 +6,6 @@ import { validateBody } from '@middlewares/validator';
 const router = Router()
 
 router.get('/', Controller.index)
+router.get('/:name', Controller.findOneByName)
 
 export default router
