@@ -1,7 +1,7 @@
 import { Schema, model, connect, Document, Date } from "mongoose";
 import { ISeat, seatSchema } from "./seats.model";
 import TicketType from "./ticketTypes.model";
-import MoviesShelf from "./moviesshelf.model";
+import MoviesShelf from "./movies.model";
 import Theater from "./theaters.model";
 import { Room } from "./rooms.model";
 

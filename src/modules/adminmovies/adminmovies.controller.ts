@@ -1,6 +1,6 @@
 import { ErrorHandler, handleErrorMiddleware } from "@middlewares/error_handler";
 import successHandler from "@middlewares/success_handler";
-import MoviesShelf from "@models/moviesshelf.model";
+import MoviesShelf from "@models/movies.model";
 import checkRequireField from "@utils/checkRequireField";
 import getTableParams from "@utils/getTableParams";
 import { NextFunction, Request, Response } from "express";

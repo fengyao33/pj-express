@@ -1,10 +1,10 @@
-import MoviesShelf from '@models/moviesshelf.model'
+import Movies from '@models/movies.model'
 import on from "await-handler";
 
 
 export class MoviesshelfService {
   async findOne(id: string, sdate: string, edate: string): Promise<Object> {
-    let [errors, result] = await on(MoviesShelf.find({
+    let [errors, result] = await on(Movies.find({
       premiere: {
         $gte: sdate,
         $lte: edate
@@ -17,18 +17,22 @@ export class MoviesshelfService {
     return {result}
   }
 
-  async findAll(skip, pageSize, isCurrent): Promise<Object[]> {
+  async findAll(skip=1, pageSize, isCurrent): Promise<Object[]> {
+    
 
     let [errors, result] = await on(
-      MoviesShelf.find()
+      Movies.find()
       .skip(skip)
       .limit(parseInt(pageSize as string))
     )
+ 
 
-    if (isCurrent) {
+    if(isCurrent == true) {
       const currentTime = new Date();
-      result = result.where('time').gt(currentTime);
+      console.log(444, currentTime)
+      result = result.where('time').gt(currentTime)
     }
+
 
     if(errors) {
       throw errors;
@@ -37,12 +41,12 @@ export class MoviesshelfService {
   }
 
   async update(id: any, body: any): Promise<Object> {
-    let [errors, result] = await on(MoviesShelf.findById(id))
+    let [errors, result] = await on(Movies.findById(id))
     return {}
   }
 
   async store(body: object): Promise<Object> {
-    let [errors]= await on(MoviesShelf.create(body))
+    let [errors]= await on(Movies.create(body))
     if(errors) {
       return errors
     }
