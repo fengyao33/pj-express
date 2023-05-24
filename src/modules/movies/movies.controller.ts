@@ -16,16 +16,11 @@ export async function index(
   if (id) {
     result = await finder.findOne(id as string, sdate as string, edate as string)
   } else {
-
     if(pageNo && pageSize) {
       skip = (parseInt(pageNo as string) - 1) * parseInt(pageSize as string)
     }
-
-
     result = await finder.findAll(skip, pageSize, isCurrent)
   }
-
-
   res.json({
     message: "success",
     data: result,

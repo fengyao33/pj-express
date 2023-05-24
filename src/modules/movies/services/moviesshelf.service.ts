@@ -17,17 +17,15 @@ export class MoviesshelfService {
     return {result}
   }
 
-  async findAll(skip=1, pageSize, isCurrent): Promise<Object[]> {
+  async findAll(skip=1 as number, pageSize: string | number, isCurrent: string | boolean ): Promise<Object[]> {
     
-
     let [errors, result] = await on(
       Movies.find()
       .skip(skip)
       .limit(parseInt(pageSize as string))
     )
- 
 
-    if(isCurrent == true) {
+    if(isCurrent == 'true') {
       const currentTime = new Date();
       result = result.where('time').gt(currentTime)
     }
