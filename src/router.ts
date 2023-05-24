@@ -1,4 +1,4 @@
-import moviesShelf from '@modules/moviesshelf/moviesshelf.routes';
+import movies from '@modules/movies/movies.routes';
 import { Router } from 'express';
 import AdminUserRouter from './modules/adminauth/adminauth.routes';
 
@@ -21,9 +21,9 @@ const router = Router();
 router.get('/', (req, res) => {
   return res.json({ Server: 'on' });
 });
-router.use('/admin/moviesShelf', moviesShelf)
+router.use('/admin/moviesShelf', movies)
 router.use('/admin/activities', adminaActivities)
-router.use('/movies', moviesShelf);
+router.use('/movies', movies);
 router.use('/activity', activities);
 router.use('/user', UserRouter);
 router.use('/admin/user', AdminUserRouter);
