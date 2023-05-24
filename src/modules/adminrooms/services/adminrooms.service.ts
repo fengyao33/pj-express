@@ -52,7 +52,7 @@ export class AdminroomsService {
   }
 
   async store(body: any): Promise<Object | unknown> {
-    const { theaterId, name, seatExampleId, ticketTypeIds } = body;
+    const { theaterId, name, type, seatExampleId, ticketTypeIds } = body;
     const seatExample = await SeatExamples.findById(seatExampleId);
 
     if (!seatExample) throw new Error('無此座位範本');
@@ -60,6 +60,7 @@ export class AdminroomsService {
     const { seatTable } = seatExample as ISeatExample;
     const room = {
       name: name,
+      type: type,
       enable: true,
       seats: seatTable,
       ticketTypeIds,
