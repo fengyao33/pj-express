@@ -1,6 +1,6 @@
 import mongoose, { Document, Model, Schema, Types } from "mongoose";
 type Rating = "G" | "PG" | "R";
-export interface IMoviesShelf<T> extends Document {
+export interface IMovies<T> extends Document {
   isAvaliableL: Boolean,
   imgUrl: String,
   videoUrl: String,
@@ -15,7 +15,7 @@ export interface IMoviesShelf<T> extends Document {
   synopsis: String;
 }
 
-const moviesShelf = new Schema<IMoviesShelf<string | number>>({
+const movies = new Schema<IMovies<string | number>>({
   isAvaliableL: {type: Boolean, required: true },
   imgUrl: { type: String, required: true },
   videoUrl: { type: String, required: true },
@@ -30,8 +30,8 @@ const moviesShelf = new Schema<IMoviesShelf<string | number>>({
   synopsis: { type: String, required: true },
 });
 
-const MoviesShelf: Model<IMoviesShelf<string | number>> = mongoose.model<
-  IMoviesShelf<string | number>
->("MoviesShelf", moviesShelf);
+const Movies: Model<IMovies<string | number>> = mongoose.model<
+IMovies<string | number>
+>("Movies", movies);
 
-export default MoviesShelf;
+export default Movies

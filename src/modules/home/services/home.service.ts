@@ -1,5 +1,5 @@
 import Activities, { IActivity } from '@models/activities.model';
-import MoviesShelf, { IMoviesShelf } from '@models/moviesshelf.model'
+import Movies, { IMovies } from '@models/movies.model'
 
 export class HomeService {
   async findAll(): Promise<Object> {
@@ -12,12 +12,11 @@ export class HomeService {
       { $limit: 20 }
     ])  
 
-    let movieList = await MoviesShelf.aggregate<IMoviesShelf<string>>([
+    const movieList = Movies.aggregate<IMovies<string>>([
       { $limit: 20 }
     ])
     
-    let focusMovie = await MoviesShelf.aggregate<IMoviesShelf<string>>([
-
+    const focusMovie = await Movies.aggregate<IMovies<string>>([
       {
         $match: {
           $expr: {
@@ -31,8 +30,7 @@ export class HomeService {
       { $limit: 10 }
     ])  
 
-    let banner  = await MoviesShelf.aggregate<IMoviesShelf<string>>([
-
+    const banner  = await Movies.aggregate<IMovies<string>>([
       {
         $match: {
           $expr: {
