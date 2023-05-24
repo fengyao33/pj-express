@@ -2,7 +2,7 @@ import Theater, { ITheater } from '@models/theaters.model';
 
 export class AdmintheatersService {
   async findOne(id: any): Promise<ITheater | unknown> {
-    return await Theater.findById(id).select('name address phone description traffic enable');
+    return await Theater.findById(id).select('name address mapUrl img phone description traffic enable');
   }
 
   async findAll(): Promise<Object[]> {
@@ -20,7 +20,7 @@ export class AdmintheatersService {
   }
 
   async update(id: string, body: ITheater): Promise<ITheater | unknown> {
-    const { name, address, phone, img, description, traffic } = body;
+    const { name, address, phone, img, mapUrl, description, traffic } = body;
     const theater = await Theater.findOneAndUpdate(
       {
         _id: id,
@@ -30,6 +30,7 @@ export class AdmintheatersService {
         address,
         phone,
         img,
+        mapUrl,
         description,
         traffic,
       },

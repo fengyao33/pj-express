@@ -6,6 +6,7 @@ export async function index(
   res: Response,
   next: NextFunction
 ): Promise<void> {
+
   const finder = new MoviesshelfService();
   const { id, branch, hell, sdate, edate, pageNo, pageSize, isCurrent } = req.query;
 

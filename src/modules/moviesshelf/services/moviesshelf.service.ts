@@ -29,7 +29,6 @@ export class MoviesshelfService {
 
     if(isCurrent == true) {
       const currentTime = new Date();
-      console.log(444, currentTime)
       result = result.where('time').gt(currentTime)
     }
 

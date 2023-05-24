@@ -1,17 +1,38 @@
 import Activities from '@models/activities.model';
 import on from "await-handler";
+import getTableParams from "@utils/getTableParams";
 
 export class ActivitiesService {
   async findOne(id: any): Promise<Object> {
     return {}
   }
 
-  async findAll(skip, pageSize): Promise<Object> {
-    let [errors, result] = await on(
+
+  async findAll(skip, pageSize, pageNo): Promise<Object> {
+    let tableParams: Object
+    let [errors, data] = await on(
+
       Activities.find()
       .skip(skip)
       .limit(parseInt(pageSize as string))
     )
+
+    if (!!pageSize && !!pageNo) { 
+      tableParams = await getTableParams({
+        model: Activities,
+        pageNo: parseInt(pageNo as string),
+        pageSize: parseInt(pageSize as string),
+      });
+    } else {
+      tableParams = {}
+    } 
+
+
+    let result = {
+      data,
+      tableParams
+    }
+
     if(errors) {
       throw errors;
     }

@@ -7,11 +7,14 @@ export async function index(req: Request, res: Response, next: NextFunction): Pr
   
   let skip = (parseInt(pageNo as string) - 1) * parseInt(pageSize as string)
   
-  const result = await finder.findAll(skip, pageSize)
+
+  let { data, tableParams }:any = await finder.findAll(skip, pageSize, pageNo)
+
 
   res.json({
     message: "success",
-    data: result,
+    data,
+    tableParams
   });
 
 }
