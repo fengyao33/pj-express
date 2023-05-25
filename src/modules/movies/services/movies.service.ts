@@ -1,21 +1,27 @@
 import Movies from '@models/movies.model'
 import on from "await-handler";
 import getTableParams from "@utils/getTableParams";
+import Session, { ISession } from "@models/sessions.model"
 
 
 export class MoviesService {
   async findOne(id: string, sdate: string, edate: string): Promise<Object> {
-    let [errors, result] = await on(Movies.find({
+    let [errors, movie] = await on(Movies.find({
       premiere: {
         $gte: sdate,
         $lte: edate
       },
       _id: id
     }))
+
+    let theater = await Session.find({movieId: id})
+    .populate('theaterId')
+  
+
     if(errors) {
       return errors;
     }
-    return {result}
+    return {movie, theater }
   }
 
   async findAll(skip=1 as number, pageSize: string | number, isCurrent: string | boolean, pageNo): Promise<Object[]> {
