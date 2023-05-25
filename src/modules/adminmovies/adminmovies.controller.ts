@@ -1,10 +1,11 @@
-import { NextFunction, Request, Response } from "express";
-import { AdminmoviesService } from "./services";
-import MoviesShelf from "@models/moviesshelf.model";
-import successHandler from "@middlewares/success_handler";
 import { ErrorHandler, handleErrorMiddleware } from "@middlewares/error_handler";
+import successHandler from "@middlewares/success_handler";
+import MoviesShelf from "@models/movies.model";
 import checkRequireField from "@utils/checkRequireField";
 import getTableParams from "@utils/getTableParams";
+import { NextFunction, Request, Response } from "express";
+import { AdminmoviesService } from "./services";
+import _ from "lodash";
 
 const service = new AdminmoviesService();
 /**
@@ -27,21 +28,21 @@ export async function getAllMovies(
     const mySearchObj =
       search !== undefined
         ? {
-            movieCName: new RegExp(search as string),
-            movieEName: new RegExp(search as string),
-          }
+          movieCName: new RegExp(search as string),
+          movieEName: new RegExp(search as string),
+        }
         : {};
     const inTheatersTimeSort =
       sort === "asc" ? "inTheatersTimeSort" : "-inTheatersTimeSort";
-    const skip = (pageNo - 1) * pageSize;
+    const skip = (parseInt(pageNo as string) - 1) * parseInt(pageSize as string);
     const result = await MoviesShelf.find()
       .skip(skip)
       .sort(inTheatersTimeSort)
-      .limit(pageSize);
+      .limit(parseInt(pageSize as string));
     const tableParams: object = await getTableParams({
       model: MoviesShelf,
-      pageNo: parseInt(pageNo),
-      pageSize: parseInt(pageSize),
+      pageNo: parseInt(pageNo as string),
+      pageSize: parseInt(pageSize as string),
       searchObj: mySearchObj,
     });
     successHandler(res, result, 200, tableParams);
@@ -63,10 +64,55 @@ export async function postMovies(
 ): Promise<void> {
   try {
     const body = req.body;
-    // const { } = body;
+    const {
+      isAvaliableL,
+      imgUrl,
+      videoUrl,
+      movieCName,
+      movieEName,
+      director,
+      cast,
+      inTheatersTime,
+      outOfTheatersTime,
+      movieTime,
+      rating,
+      synopsis,
+    } = body;
+    checkRequireField({
+      checkArr: [
+        "isAvaliableL",
+        "imgUrl",
+        "videoUrl",
+        "movieCName",
+        "movieEName",
+        "director",
+        "cast",
+        "inTheatersTime",
+        "outOfTheatersTime",
+        "movieTime",
+        "rating",
+        "synopsis",
+      ],
+      obj: body,
+    });
+    const newData = _.omitBy(
+      { isAvaliableL,
+      imgUrl,
+      videoUrl,
+      movieCName,
+      movieEName,
+      director,
+      cast,
+      inTheatersTime,
+      outOfTheatersTime,
+      movieTime,
+      rating,
+      synopsis, },
+      _.isEmpty
+    );
     //欄位檢查等collection欄位整合後處理
     const result = await MoviesShelf.create({
-      ...body
+      ...newData,
     });
     successHandler(res, result);
   } catch (error: any) {
@@ -88,14 +134,64 @@ export async function updateMovies(
   try {
     const { id } = req.params;
     const body = req.body;
-    // const { } = body;
-    //欄位檢查等collection欄位整合後處理
-    const result: any = await MoviesShelf.findByIdAndUpdate(id, {
-      ...body,
+    const {
+      isAvaliableL,
+      imgUrl,
+      videoUrl,
+      movieCName,
+      movieEName,
+      director,
+      cast,
+      inTheatersTime,
+      outOfTheatersTime,
+      movieTime,
+      rating,
+      synopsis,
+    } = body;
+    checkRequireField({
+      checkArr: [
+        "isAvaliableL",
+        "imgUrl",
+        "videoUrl",
+        "movieCName",
+        "movieEName",
+        "director",
+        "cast",
+        "inTheatersTime",
+        "outOfTheatersTime",
+        "movieTime",
+        "rating",
+        "synopsis",
+      ],
+      obj: body,
     });
+    const newData = _.omitBy(
+      {
+        isAvaliableL,
+        imgUrl,
+        videoUrl,
+        movieCName,
+        movieEName,
+        director,
+        cast,
+        inTheatersTime,
+        outOfTheatersTime,
+        movieTime,
+        rating,
+        synopsis,
+      },
+      _.isEmpty
+    );
+    const result: any = await MoviesShelf.findByIdAndUpdate(
+      id,
+      {
+        $set: { ...newData },
+      },
+      { new: true }
+    );
     successHandler(res, result);
   } catch (error: any) {
-    handleErrorMiddleware(new ErrorHandler(400, "請求失敗"), req, res, next);
+    handleErrorMiddleware(new ErrorHandler(400, error.message), req, res, next);
   }
 }
 

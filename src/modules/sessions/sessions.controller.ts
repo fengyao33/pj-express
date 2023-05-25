@@ -25,7 +25,9 @@ export async function index(req: Request, res: Response, next: NextFunction): Pr
  */
 export async function getTicketTypes(req: Request, res: Response, next: NextFunction): Promise<void> {
   const finder = new SessionsService()
-  successHandler(res, await finder.findTicketTypesById(req.params.id))
+  const result = await finder.findTicketTypesById(req.params.id);
+  if (result instanceof ErrorHandler)handleErrorMiddleware(result,req,res,next)
+  else successHandler(res, result)
 }
 
 /**
@@ -36,7 +38,9 @@ export async function getTicketTypes(req: Request, res: Response, next: NextFunc
  */
 export async function getRoomInfo(req: Request, res: Response, next: NextFunction): Promise<void> {
   const finder = new SessionsService()
-  successHandler(res, await finder.findRoomInfoBySessionId(req.params.id))
+  const result = await finder.findRoomInfoBySessionId(req.params.id);
+  if (result instanceof ErrorHandler)handleErrorMiddleware(result,req,res,next)
+  else successHandler(res, result)
 }
 
 /**
@@ -47,6 +51,7 @@ export async function getRoomInfo(req: Request, res: Response, next: NextFunctio
  */
 export async function checkSeatsInfo(req: Request, res: Response, next: NextFunction): Promise<void> {
   const finder = new SessionsService()
-  
-  successHandler(res, await finder.checkSeatsStatusBySessionId(req.params.id, req.body?.seats))
+  const result = await finder.checkSeatsStatusBySessionId(req.params.id, req.body?.seats);
+  if (result instanceof ErrorHandler)handleErrorMiddleware(result,req,res,next)
+  else successHandler(res, result)
 }

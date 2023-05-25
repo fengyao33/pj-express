@@ -1,15 +1,15 @@
-import { NextFunction, Request, Response } from "express";
-import { AdminmemberService } from "./services";
-import successHandler from "@middlewares/success_handler";
-import User from "@models/user.model";
-import _ from "lodash";
-import bcrypt from "bcryptjs";
-import getTableParams from "@utils/getTableParams";
 import {
   ErrorHandler,
   handleErrorMiddleware,
 } from "@middlewares/error_handler";
+import successHandler from "@middlewares/success_handler";
+import User from "@models/user.model";
 import checkRequireField from "@utils/checkRequireField";
+import getTableParams from "@utils/getTableParams";
+import bcrypt from "bcryptjs";
+import { NextFunction, Request, Response } from "express";
+import _ from "lodash";
+import { AdminmemberService } from "./services";
 
 const service = new AdminmemberService();
 
@@ -33,18 +33,18 @@ export async function getAllMember(
     const mySearchObj =
       search !== undefined ? { name: new RegExp(search as string) } : {};
     const timeSort = sort === "asc" ? "createdAt" : "-createdAt";
-    const skip = (pageNo - 1) * pageSize;
+    const skip = (parseInt(pageNo as string) - 1) * parseInt(pageSize as string);
     const result = await User.find(mySearchObj)
       .skip(skip)
       .populate({
         path: "orderId",
       })
       .sort(timeSort)
-      .limit(pageSize);
+      .limit(parseInt(pageSize as string));
     const tableParams: object = await getTableParams({
       model: User,
-      pageNo: parseInt(pageNo),
-      pageSize: parseInt(pageSize),
+      pageNo: parseInt(pageNo as string),
+      pageSize: parseInt(pageSize as string),
       searchObj: mySearchObj,
     });
     successHandler(res, result, 200, tableParams);

@@ -1,75 +1,53 @@
 import { Schema, model, connect, Document, Date } from "mongoose";
-import { IRoom, ISeat, roomSchema, seatSchema } from "./theaters.model";
+import { ISeat, seatSchema } from "./seats.model";
 import TicketType from "./ticketTypes.model";
+import MoviesShelf from "./movies.model";
+import Theater from "./theaters.model";
+import { Room } from "./rooms.model";
 
 export interface ISession extends Document {
   datetime: Date,
   theaterId: Schema.Types.ObjectId,
-  roomInfo: IRoom,
+  roomInfo: Schema.Types.ObjectId,
   movieId: Schema.Types.ObjectId,
-  ticketTypeIds: Schema.Types.ObjectId[]
+  ticketTypeIds: Schema.Types.ObjectId[],
+  seats: ISeat[]
 }
 
-const seatSchemaForSession = new Schema<ISeat>(
-  {
-    ...seatSchema.obj,
-    status: {
-      type: Number,
-      required: [true, "請輸入座位狀態"],
-      enum: [0, 1, 2, 3],
-    },
+const sessionSchema = new Schema<ISession>({
+  datetime: {
+    type: Date,
+    required: [true, "請輸入電影開演時間欄位:datetime"],
   },
-  { _id: false }
-);
-
-const roomSchemaForSession = new Schema<IRoom>(
-  {
-    name: {
-      type: String,
-      required: [true, "請輸入影廳名稱欄位:name"],
-      validate: {
-        validator: (name: string) => /^\d+廳$/.test(name),
-        message: '影廳名稱必須為 "數字+廳" 的格式',
-      },
-    },
-    ...roomSchema.obj,
-    seats: { type: [seatSchemaForSession], required: [true, "請輸入座位資訊"] },
+  theaterId: {
+    type: Schema.Types.ObjectId,
+    required: [true, "請輸入影城id欄位:theaterId"],
+    ref: Theater.modelName
   },
-  { _id: false }
-);
-
-const sessionSchema = new Schema<ISession>(
-  {
-    datetime: {
-      type: Date,
-      required: [true, "請輸入電影開演時間欄位:datetime"],
-    },
-    theaterId: {
+  roomInfo: {
+    type: Schema.Types.ObjectId,
+    required: [true, "請輸入影廳資訊Id欄位:roomInfo"],
+    ref: Room.modelName
+  },
+  movieId: {
+    type: Schema.Types.ObjectId,
+    required: [true, "請輸入電影id欄位:movieId"],
+    ref: MoviesShelf.modelName
+  },
+  ticketTypeIds: [
+    {
       type: Schema.Types.ObjectId,
-      required: [true, "請輸入影城id欄位:theaterId"],
+      required: [true, "票種資訊id欄位:ticketTypeId 未輸入"],
+      ref: TicketType.modelName,
     },
-    roomInfo: {
-      type: roomSchemaForSession,
-      required: [true, "請輸入影廳資訊欄位:roomInfo.name"],
-    },
-    movieId: {
-      type: Schema.Types.ObjectId,
-      required: [true, "請輸入電影id欄位:movieId"],
-    },
-    ticketTypeIds: [
-      {
-        type: Schema.Types.ObjectId,
-        required: [true, "票種資訊id欄位:ticketTypeId 未輸入"],
-        ref: TicketType.collection.name,
-      },
-    ],
-  },
-  {
-    versionKey: false,
-    collection: "sessions",
-    timestamps: true,
-  }
-);
+  ],
+  seats: [
+    {
+      type: seatSchema,
+      required: [true, "seat欄位:seats 未輸入"]
+    }
+  ]
+});
 
 const Session = model<ISession>("sessions", sessionSchema);
 
