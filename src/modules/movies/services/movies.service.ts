@@ -20,37 +20,50 @@ export class MoviesService {
 
   async findAll(skip=1 as number, pageSize: string | number, isCurrent: string | boolean, pageNo): Promise<Object[]> {
 
-    let tableParams: Object
-    let [errors, result] = await on(
-      Movies.find({
-        ...(isCurrent === true
-          ? {
-              time: {
-                $gte: new Date(new Date().setDate(new Date().getDate() - 10)),
-                $lte: new Date(new Date().setDate(new Date().getDate() + 10))
+    if( pageSize || isCurrent || pageNo) {
+
+      let tableParams: Object
+      let [errors, result] = await on(
+        Movies.find({
+          ...(isCurrent === true
+            ? {
+                time: {
+                  $gte: new Date(new Date().setDate(new Date().getDate() - 10)),
+                  $lte: new Date(new Date().setDate(new Date().getDate() + 10))
+                }
               }
-            }
-          : {})
-      })
-        .skip(skip)
-        .limit(parseInt(pageSize as string))
-    );
-      console.log(777888, result)
+            : {})
+        })
+          .skip(skip)
+          .limit(parseInt(pageSize as string))
+      );
+  
+  
+      if (!!pageSize && !!pageNo) { 
+        tableParams = await getTableParams({
+          model: Movies,
+          pageNo: parseInt(pageNo as string),
+          pageSize: parseInt(pageSize as string),
+        });
+      } else {
+        tableParams = {}
+      } 
+  
+      if(errors) {
+        throw errors;
+      }
+      return  [ result, tableParams ]
 
-    if (!!pageSize && !!pageNo) { 
-      tableParams = await getTableParams({
-        model: Movies,
-        pageNo: parseInt(pageNo as string),
-        pageSize: parseInt(pageSize as string),
-      });
     } else {
-      tableParams = {}
-    } 
+      let [errors, result] = await on(Movies.find())
+      
+      if(errors) {
+        throw errors;
+      }
+      return result
 
-    if(errors) {
-      throw errors;
     }
-    return  [ result, tableParams ]
+
   }
 
   async update(id: any, body: any): Promise<Object> {
