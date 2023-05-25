@@ -12,7 +12,7 @@ export async function index(req: Request, res: Response, next: NextFunction): Pr
 
 
   res.json({
-    message: "success",
+    status: "success",
     data,
     ...tableParams
   });

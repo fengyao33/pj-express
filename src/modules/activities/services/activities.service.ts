@@ -15,6 +15,7 @@ export class ActivitiesService {
       Activities.find()
       .skip(skip)
       .limit(parseInt(pageSize as string))
+      .select("id title content img")
     )
 
     if (!!pageSize && !!pageNo) { 
