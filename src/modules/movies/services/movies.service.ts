@@ -1,17 +1,24 @@
 import Movies from '@models/movies.model'
 import on from "await-handler";
 import getTableParams from "@utils/getTableParams";
+import Session, { ISession } from "@models/sessions.model"
 
 
 export class MoviesService {
   async findOne(id: string, sdate: string, edate: string): Promise<Object> {
     let [errors, result] = await on(Movies.find({
-      premiere: {
-        $gte: sdate,
-        $lte: edate
-      },
+      // premiere: {
+      //   $gte: sdate,
+      //   $lte: edate
+      // },
       _id: id
     }))
+    console.log(result)
+
+    let test = await Session.findById(id)
+    console.log(test)
+
+
     if(errors) {
       return errors;
     }

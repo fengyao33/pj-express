@@ -7,6 +7,9 @@ const router = Router();
 
 router.get("/", Controller.index);
 
+router.get("/:id", Controller.index);
+
+
 router.post("/", [...storeValidators, validateBody], Controller.store);
 
 router.patch("/:id", [...updateValidators, validateBody], Controller.update);

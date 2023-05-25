@@ -31,7 +31,7 @@ export async function index(
     res.json({
       status: "success",
       data: result,
-      tableParams
+      ...tableParams
   
     });
   }
