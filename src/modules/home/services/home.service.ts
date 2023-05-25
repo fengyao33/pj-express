@@ -70,7 +70,7 @@ export class HomeService {
     const focusMovie = await Movies.aggregate<IMovies<string>>([
       {
         $project: {
-        imgUrl: 1,
+        movieUrl: 1,
         movieCName: 1,
         synopsis: 1  
         }
@@ -103,16 +103,18 @@ export class HomeService {
         $project: {
           id: 1,
           imgUrl: 1,
-          describe: 1
+          movieCName: 1,
+          inTheatersTime: 1,
+          outOfTheatersTime: 1,
         }
       },
       { $limit: 10 }
     ])  
 
-    let date = { activity, currentMovieList, futureMovieList, banner, focusMovie }
+    let data = { activity, currentMovieList, futureMovieList, banner, focusMovie }
 
 
-    return date
+    return data
   }
 
 }
