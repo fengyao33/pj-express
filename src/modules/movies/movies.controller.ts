@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { MoviesshelfService } from "./services";
+import { MoviesService } from "./services";
 
 export async function index(
   req: Request,
@@ -7,24 +7,35 @@ export async function index(
   next: NextFunction
 ): Promise<void> {
 
-  const finder = new MoviesshelfService();
+  const finder = new MoviesService();
   const { id, branch, hell, sdate, edate, pageNo, pageSize, isCurrent } = req.query;
 
-  let result
   let skip
 
   if (id) {
-    result = await finder.findOne(id as string, sdate as string, edate as string)
+    let result = await finder.findOne(id as string, sdate as string, edate as string)
+
+    res.json({
+      status: "success",
+      data: result,
+  
+    })
   } else {
     if(pageNo && pageSize) {
       skip = (parseInt(pageNo as string) - 1) * parseInt(pageSize as string)
+
     }
-    result = await finder.findAll(skip, pageSize, isCurrent)
+     let [ result, tableParams ] = await finder.findAll(skip, pageSize, isCurrent, pageNo)
+
+
+    res.json({
+      status: "success",
+      data: result,
+      tableParams
+  
+    });
   }
-  res.json({
-    message: "success",
-    data: result,
-  });
+
   // const result = await (id
   //   ? finder.findOne(id as string, sdate as string, edate as string)
   //   : finder.findAll());
@@ -39,7 +50,7 @@ export async function store(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  const saver = new MoviesshelfService();
+  const saver = new MoviesService();
   const result = await saver.store(req.body);
   res.json(result);
 }
@@ -50,7 +61,7 @@ export async function update(
   next: NextFunction
 ): Promise<void> {
   const { id } = req.params;
-  const updater = new MoviesshelfService();
+  const updater = new MoviesService();
 }
 
 

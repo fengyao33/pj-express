@@ -1,1 +1,1 @@
-export * from './moviesshelf.service'
+export * from './movies.service'
