@@ -15,6 +15,8 @@ export async function index(
   if (id) {
     let result = await finder.findOne(id as string, sdate as string, edate as string)
 
+    
+
     res.json({
       status: "success",
       data: result,
