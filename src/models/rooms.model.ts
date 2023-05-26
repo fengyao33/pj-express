@@ -7,7 +7,8 @@ export interface IRoom extends Document {
   enable: boolean,
   seats: ISeat[],
   ticketTypeIds: Schema.Types.ObjectId[],
-  type: string
+  type: string,
+  times: string[]
 }
 
 export const roomSchema = new Schema<IRoom>({
@@ -28,7 +29,8 @@ export const roomSchema = new Schema<IRoom>({
   type: {
     type: String,
     required: [true, '類型名稱不可為空']
-  }
+  },
+  times: Array
 });
 
 export const Room = model<IRoom>("rooms", roomSchema);

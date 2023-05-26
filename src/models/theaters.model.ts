@@ -11,6 +11,7 @@ export interface ITheater extends Document {
   description: string;
   traffic: string;
   enable: boolean;
+  timeInfo:Schema.Types.ObjectId[]
 }
 
 const theaterSchema = new Schema<ITheater>({
@@ -32,6 +33,11 @@ const theaterSchema = new Schema<ITheater>({
     type: Boolean,
     default: true,
   },
+  // 用於關聯電影場次
+  timeInfo: {
+    type: [Schema.Types.ObjectId],
+    ref: 'Room'
+  }
 });
 
 const Theater = model<ITheater>('theaters', theaterSchema);
