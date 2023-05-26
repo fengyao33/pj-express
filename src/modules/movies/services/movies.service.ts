@@ -15,43 +15,32 @@ export class MoviesService {
       _id: id
     }))
 
-    let theaterTemp = await Session.find({movieId: id})
-      .populate({
-        path:'theaterId',
-        options: { lean: true },
-      })
-
-    _.map(theaterTemp, item => {
-      console.log(item)
-    })
-
-    // console.log(1111111, name)
-    // .populate({
-    //   path:'roomInfo',
-    //   // select: ['name', 'seats'],
-    //   // options: { lean: true },
-    // })
-    // .populate({
-    //   path:'movieId',
-    // })
-
-
-    // let theater = theaterTemp.map(session => {
-    //   return {
-    //     theaterInfo: session.theaterId,
-    //     room: session.roomInfo
-    //   };
-    // });
-
-
     if(errors) {
       return errors;
     }
-    // return {
-    //   movie,
-    //   theaterTemp 
-    // }
-    return  111
+
+    let [theaterErr, theater] = await on(Session.find({movieId: id})
+      .select('_id datetime theaterId')
+      .populate({
+        path:'theaterId',
+        select: 'name address timeInfo',
+        populate: {
+          path: 'timeInfo',
+          select: 'name type _id times',
+          model: 'rooms',
+          options: { lean: true }
+        }
+      }))
+
+    if(theaterErr) {
+      return theaterErr;
+    }
+
+    return {
+      movie,
+      theater 
+    }
+
   }
 
   async findAll(skip=1 as number, pageSize: string | number, isCurrent: string | boolean, pageNo): Promise<Object[]> {
