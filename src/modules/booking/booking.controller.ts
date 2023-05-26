@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import { BookingService } from './services'
 import successHandler from '@middlewares/success_handler'
 import { ErrorHandler, handleErrorMiddleware } from '@middlewares/error_handler'
+import { SessionsService } from '@modules/sessions/services'
 
 /**
  * hash booking data
@@ -11,13 +12,19 @@ import { ErrorHandler, handleErrorMiddleware } from '@middlewares/error_handler'
  */
 export async function index(req: Request, res: Response, next: NextFunction): Promise<void> {
   const cashService = new BookingService()
-  const err = await cashService.checkData(req.body)
+  const sessionsService = new SessionsService()
+  
+  let err = await cashService.checkData(req.body)
   if(err instanceof ErrorHandler){
     handleErrorMiddleware(err,req,res,next)
+    return
   }
-  else{
-    successHandler(res, await cashService.hashData(req.headers.authorization.split(' ')[1],req.body))
+  err = await sessionsService.checkSeatsStatusBySessionId(req.body.sessionId, req.body.seats)
+  if(err instanceof ErrorHandler){
+    handleErrorMiddleware(err,req,res,next)
+    return
   }
+  successHandler(res, await cashService.hashData(req.headers.authorization.split(' ')[1],req.body))
 }
 
 /**
