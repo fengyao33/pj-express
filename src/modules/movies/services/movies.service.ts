@@ -2,11 +2,12 @@ import Movies from '@models/movies.model'
 import on from "await-handler";
 import getTableParams from "@utils/getTableParams";
 import Session, { ISession } from "@models/sessions.model"
+import _ from 'lodash'
 
 
 export class MoviesService {
   async findOne(id: string, sdate: string, edate: string): Promise<Object> {
-    let [errors, movie] = await on(Movies.find({
+    let [errors, movie] = await on(Movies.findOne({
       premiere: {
         $gte: sdate,
         $lte: edate
@@ -14,14 +15,43 @@ export class MoviesService {
       _id: id
     }))
 
-    let theater = await Session.find({movieId: id})
-    .populate('theaterId')
-  
+    let theaterTemp = await Session.find({movieId: id})
+      .populate({
+        path:'theaterId',
+        options: { lean: true },
+      })
+
+    _.map(theaterTemp, item => {
+      console.log(item)
+    })
+
+    // console.log(1111111, name)
+    // .populate({
+    //   path:'roomInfo',
+    //   // select: ['name', 'seats'],
+    //   // options: { lean: true },
+    // })
+    // .populate({
+    //   path:'movieId',
+    // })
+
+
+    // let theater = theaterTemp.map(session => {
+    //   return {
+    //     theaterInfo: session.theaterId,
+    //     room: session.roomInfo
+    //   };
+    // });
+
 
     if(errors) {
       return errors;
     }
-    return {movie, theater }
+    // return {
+    //   movie,
+    //   theaterTemp 
+    // }
+    return  111
   }
 
   async findAll(skip=1 as number, pageSize: string | number, isCurrent: string | boolean, pageNo): Promise<Object[]> {
