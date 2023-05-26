@@ -93,7 +93,7 @@ export class UserauthService {
         orderDate: order.orderDatetime, //訂單時間
         bonus: Math.round(order.price / 10) //點數機制:消費/10
       }
-    }).filter(order => order.status == "未取票" || order.status == "已取票")
+    })
     const endDateOfThisYear = new Date(new Date().getFullYear(), 11, 31)
     const endDateOfNextYear = new Date(new Date().getFullYear() + 1, 11, 31)
 
