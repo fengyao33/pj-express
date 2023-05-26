@@ -262,22 +262,9 @@ export class BookingService {
   }
 
   async completedPay(body: any): Promise<Object> {
-
-
     //#region 變更座位變更為已販售
     const order = await Order.findOne({ orderId: body.MerchantTradeNo })
     if (order == null) return new ErrorHandler(400, "沒有此訂單編號")
-    const searchSeats = order?.seats.map((seat, i) => {
-      const [colStr, rowStr] = seat.split("排");
-      const col = Number(colStr);
-      const row = Number(rowStr);
-      return { [`elem${i}.col`]: col, [`elem${i}.row`]: row };
-    })
-    const newStatus = true;
-    const updateObj = {};
-    order?.seats.forEach((rc, i) => {
-      updateObj[`seats.$[elem${i}].isSold`] = newStatus;
-    });
 
     let selectedSession
     try {
@@ -306,20 +293,13 @@ export class BookingService {
       })
       return new ErrorHandler(400, errMsg)
     }
-    const resultSessionSeatUpdate = await Session.updateOne(
-      { _id: order?.sessionId },
-      { $set: updateObj },
-      { arrayFilters: searchSeats }
-    )
-    //#endregion
     await seatsUpdate(order?.sessionId.toString(), order?.seats.map(seat => {
       const [colStr, rowStr] = seat.split("排");
       const col = Number(colStr);
       const row = Number(rowStr);
       return { row, col };
     }), { isSold: true })
-
-
+    //#endregion
 
     //訂票紀錄狀態變更為未取票
     await Order.findOneAndUpdate({ orderId: body.MerchantTradeNo }, { payMethod: getPayMethodFromEcpay(body.PaymentType), status: "未取票" })
