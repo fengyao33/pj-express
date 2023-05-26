@@ -26,6 +26,7 @@ export class SessionsService {
     } catch {
       return new ErrorHandler(400, "找不到場次")
     }
+    if(result == null)return new ErrorHandler(400, "找不到場次")
     return (result as ISession).seats
   }
 
@@ -37,6 +38,7 @@ export class SessionsService {
     } catch {
       return new ErrorHandler(400, "找不到場次")
     }
+    if(result == null)return new ErrorHandler(400, "找不到場次")
     const seatsBySessionId = (result as ISession).seats
     let err;
     seatsQ.forEach((q, index) => {
