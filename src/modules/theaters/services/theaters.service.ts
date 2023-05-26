@@ -25,8 +25,19 @@ function getTicketInfos(rs: IRoom[]) {
 export class TheatersService {
   async findAll(): Promise<Object[]> {
     const theaters = await Theater.find().populate({ path: 'rooms.ticketTypeIds' });
-
-    return theaters.map((t) => {
+    
+    return theaters.sort((tA,tB)=>{
+      const areaNumA = tA.phone.split('-')[0]
+      const areaNumB = tB.phone.split('-')[0]
+      if (areaNumA < areaNumB) {
+        return -1;
+      }
+      if (areaNumA > areaNumB) {
+        return 1;
+      }
+      return 0;
+    })
+    .map((t) => {
       const ticketInfos = getTicketInfos(t.rooms);
 
       return {
