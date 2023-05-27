@@ -11,8 +11,49 @@ export class SessionsService {
     } catch {
       return new ErrorHandler(400, "找不到場次")
     }
-    if(result == null)return new ErrorHandler(400, "找不到場次")
+    if (result == null) return new ErrorHandler(400, "找不到場次")
     return (result as ISession).ticketTypeIds
+  }
+
+  async getSessionInfoById(id): Promise<ErrorHandler | Object> {
+    let result: any
+    try {
+      result = await Session.findById(id)
+        .populate({ path: 'ticketTypeIds' })
+        .populate({ path: 'theaterId' })
+        .populate({ path: 'movieId' })
+    } catch {
+      return new ErrorHandler(400, "找不到場次")
+    }
+    if (result == null) return new ErrorHandler(400, "找不到場次")
+    const selectedRoom = result.theaterId.rooms.find(r => r._id.equals(result.roomInfo));
+    const strRating = (e) => {
+      switch (e) {
+        case 'G':
+          return "普遍級"
+        case 'PG':
+          return "輔導級"
+        case 'R':
+          return "限制級"
+        default:
+          return "Unknow"
+      }
+    }
+
+    return {
+      movie: {
+        movieCName: result.movieId.movieCName,
+        movieEName: result.movieId.movieEName,
+        rating: strRating(result.movieId.rating)
+      },
+      theater: {
+        name: result.theaterId.name
+      },
+      roomInfo: {
+        name: selectedRoom.name
+      },
+      datetime: result.datetime
+    }
   }
 
   async findAll(): Promise<Object[]> {
@@ -26,7 +67,7 @@ export class SessionsService {
     } catch {
       return new ErrorHandler(400, "找不到場次")
     }
-    if(result == null)return new ErrorHandler(400, "找不到場次")
+    if (result == null) return new ErrorHandler(400, "找不到場次")
     return (result as ISession).seats
   }
 
@@ -38,7 +79,7 @@ export class SessionsService {
     } catch {
       return new ErrorHandler(400, "找不到場次")
     }
-    if(result == null)return new ErrorHandler(400, "找不到場次")
+    if (result == null) return new ErrorHandler(400, "找不到場次")
     const seatsBySessionId = (result as ISession).seats
     let err;
     seatsQ.forEach((q, index) => {
@@ -51,12 +92,11 @@ export class SessionsService {
         }
       })
       if (!isFind) {
-        err = new ErrorHandler(400,`請求的座位資料col=${q.col},row=${q.row} 沒有在此場次座位表中`)
+        err = new ErrorHandler(400, `請求的座位資料col=${q.col},row=${q.row} 沒有在此場次座位表中`)
         return;
       }
     })
 
-
-    return err == undefined?seatsQ:err
+    return err == undefined ? seatsQ : err
   }
 }

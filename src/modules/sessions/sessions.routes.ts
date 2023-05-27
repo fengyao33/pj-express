@@ -8,6 +8,7 @@ const router = Router()
 
 router.get('/', Controller.index)
 router.get('/:id/ticketTypes', Controller.getTicketTypes)
+router.get('/:id', Controller.getInfo)
 router.get('/:id/seats', isAuth, Controller.getRoomInfo)
 router.post('/:id/seats', isAuth, Controller.checkSeatsInfo)
 
