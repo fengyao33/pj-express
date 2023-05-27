@@ -86,14 +86,15 @@ export class UserauthService {
       }
     })
     if(user==undefined)return new ErrorHandler(400,'沒有此User')
-    const returnOrders = user.orderId.map(order => {
+    const returnOrders = user.orderId.filter(order => order.status == "未取票" || order.status == "已取票").
+    map(order => {
       return {
         theaterName: order.sessionId.theaterId.name, //影城名稱
         orderNumber: order.orderId, //訂單編號
         orderDate: order.orderDatetime, //訂單時間
         bonus: Math.round(order.price / 10) //點數機制:消費/10
       }
-    }).filter(order => order.status == "未取票" || order.status == "已取票")
+    })
     const endDateOfThisYear = new Date(new Date().getFullYear(), 11, 31)
     const endDateOfNextYear = new Date(new Date().getFullYear() + 1, 11, 31)
 
