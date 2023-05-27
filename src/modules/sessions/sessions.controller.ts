@@ -31,6 +31,19 @@ export async function getTicketTypes(req: Request, res: Response, next: NextFunc
 }
 
 /**
+ * Return relative info from the Specified session
+ * @param req
+ * @param res
+ * @param next
+ */
+export async function getInfo(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const finder = new SessionsService()
+  const result = await finder.getSessionInfoById(req.params.id);
+  if (result instanceof ErrorHandler)handleErrorMiddleware(result,req,res,next)
+  else successHandler(res, result)
+}
+
+/**
  * Return seatsInfo from the Specified session
  * @param req
  * @param res
