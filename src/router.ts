@@ -15,6 +15,7 @@ import TheatersRouter from '@modules/theaters/theaters.routes';
 import BookingRouter from '@modules/booking/booking.routes';
 import Home from '@modules/home/home.routes';
 import activities from '@modules/activities/activities.routes';
+import timesessions from '@modules/timesessions/timesessions.routes';
 const router = Router();
 
 //importing all routes here
@@ -24,6 +25,7 @@ router.get('/', (req, res) => {
 router.use('/admin/moviesShelf', movies)
 router.use('/admin/activities', adminaActivities)
 router.use('/movies', movies);
+router.use('/timesessions', timesessions);
 router.use('/activity', activities);
 router.use('/user', UserRouter);
 router.use('/admin/user', AdminUserRouter);
