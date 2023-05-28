@@ -1,7 +1,8 @@
 import { ErrorHandler } from '@middlewares/error_handler';
 import { IRoom } from '@models/rooms.model';
 import Theater from '@models/theaters.model';
-import TicketType from '@models/ticketTypes.model';
+import Movies from '@models/movies.model';
+import Sessions from '@models/sessions.model';
 
 function getTicketInfos(rs: IRoom[]) {
   const ticketInfos = {};
@@ -88,4 +89,12 @@ export class TheatersService {
       }),
     };
   }
+
+  async getOneTheater(id: string) {
+    return await Theater.findOne({_id:id})
+  }
 }
+
+
+
+
