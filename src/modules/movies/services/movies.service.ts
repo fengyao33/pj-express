@@ -63,13 +63,27 @@ export class MoviesService {
 
 
         plainTheater.theaterInfo.timeInfo = timeInfo
-        
+
+
         delete plainTheater.times
         delete plainTheater.showTimes
         delete plainTheater.rooms
         return plainTheater;
       });
     }
+
+
+    // 使用 Lodash 修改数据结构
+    theaters = _.map(theaters, theater => {
+      const theaterInfo = _.isArray(theater.theaterInfo)
+        ? theater.theaterInfo
+        : [theater.theaterInfo];
+      return {
+        ...theater,
+        theaterInfo,
+      };
+    });
+    
 
     return {
       movie,
