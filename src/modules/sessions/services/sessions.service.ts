@@ -44,7 +44,8 @@ export class SessionsService {
       movie: {
         movieCName: result.movieId.movieCName,
         movieEName: result.movieId.movieEName,
-        rating: strRating(result.movieId.rating)
+        rating: strRating(result.movieId.rating),
+        imgUrl: result.movieId.imgUrl
       },
       theater: {
         name: result.theaterId.name
