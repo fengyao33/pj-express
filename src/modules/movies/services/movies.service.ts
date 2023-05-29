@@ -72,7 +72,7 @@ export class MoviesService {
     }
 
     return {
-      // movie,
+      movie,
       theaters ,
     }
 
