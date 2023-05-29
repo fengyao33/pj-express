@@ -121,19 +121,17 @@ function getDataTime() {
   return isoString
 }
 
-function getEcpatDateTime(IsoStr) {
+function getEcpayDateTime(IsoStr) {
   const date = new Date(IsoStr);
-  const formattedDateString = date.toLocaleString('en-US', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-    timeZone: 'UTC'
-  });
-  return formattedDateString
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  
+  const formattedDateTime = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+  return formattedDateTime;
 }
 
 function hasDuplicateData(arr) {
@@ -245,7 +243,7 @@ export class BookingService {
     const payData: any = {
       MerchantID: '3002607',
       MerchantTradeNo: createResult.orderId,
-      MerchantTradeDate: getEcpatDateTime(createResult.orderDatetime),
+      MerchantTradeDate: getEcpayDateTime(createResult.orderDatetime),
       PaymentType: 'aio',
       TotalAmount: createResult.price.toString(),
       TradeDesc: '我是商品描述',
@@ -315,7 +313,7 @@ export class BookingService {
     const payData: any = {
       MerchantID: '3002607',
       MerchantTradeNo: order.orderId,
-      MerchantTradeDate: getEcpatDateTime(order.orderDatetime),
+      MerchantTradeDate: getEcpayDateTime(order.orderDatetime),
       PaymentType: 'aio',
       TotalAmount: order.price.toString(),
       TradeDesc: '我是商品描述',
