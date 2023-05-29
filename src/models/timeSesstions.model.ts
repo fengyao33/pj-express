@@ -8,7 +8,7 @@ export interface ITimeSessions extends Document {
   movie: Schema.Types.ObjectId,
   date: Date,
   rooms: Schema.Types.ObjectId[],
-  session: Schema.Types.ObjectId,
+  sessionId: Schema.Types.ObjectId,
   theaterInfo: Schema.Types.ObjectId,
   showTimes: Date[]
 }
@@ -24,9 +24,9 @@ export const timeSessionsSchema = new Schema<ITimeSessions>({
     type:  [Schema.Types.ObjectId],
     ref: 'Room'
   },
-  session: {
+  sessionId: {
     type:  Schema.Types.ObjectId,
-    ref: 'sessionhs'
+    ref: 'sessions'
   },
   theaterInfo: {
     type:  Schema.Types.ObjectId,

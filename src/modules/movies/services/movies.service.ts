@@ -4,6 +4,8 @@ import getTableParams from "@utils/getTableParams";
 // import Session, { ISession } from "@models/sessions.model"
 import TimeSesstions from "@models/timeSesstions.model"
 import _ from 'lodash'
+import Session from '@models/sessions.model';
+import { ObjectId } from 'mongoose';
 
 
 export class MoviesService {
@@ -21,7 +23,7 @@ export class MoviesService {
     }
 
     let [theaterErr, theaters] = await on(TimeSesstions.find({movie: id})
-      .select('id date showTimes')
+      .select('id date showTimes sessionId')
       .populate({
         path:'theaterInfo',
         model: 'theaters',
@@ -39,7 +41,7 @@ export class MoviesService {
     }
 
     if (!theaterErr) {
-      let timeInfo: Array<{ room: string,type: string, seat: number, times: Date[] , time?: Date}> = []
+      let timeInfo: Array<{ room: string,type: string, seat: number, times: Date[] , time?: Date, SessionOd?: ObjectId}> = []
 
       theaters = theaters.map(theater=> {
 
@@ -50,7 +52,8 @@ export class MoviesService {
             room: room.name,
             type: room.type,
             seat: room.seats.length,
-            times: plainTheater.showTimes
+            times: plainTheater.showTimes,
+            SessionId: plainTheater.sessionId
           }       
           timeInfo.push(tempRoom)
         })
