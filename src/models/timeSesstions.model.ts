@@ -6,16 +6,18 @@ import { Room } from "./rooms.model";
 
 export interface ITimeSessions extends Document {
   movie: Schema.Types.ObjectId,
-  showTime: Date,
+  date: Date,
   rooms: Schema.Types.ObjectId[],
-  session: Schema.Types.ObjectId
+  session: Schema.Types.ObjectId,
+  theaterInfo: Schema.Types.ObjectId,
+  showTimes: Date[]
 }
 export const timeSessionsSchema = new Schema<ITimeSessions>({
   movie: {
     type:  Schema.Types.ObjectId,
     ref: 'movies'
   },
-  showTime: {
+  date: {
     type:  Date,
   },
   rooms: {
@@ -26,6 +28,13 @@ export const timeSessionsSchema = new Schema<ITimeSessions>({
     type:  Schema.Types.ObjectId,
     ref: 'sessionhs'
   },
+  theaterInfo: {
+    type:  Schema.Types.ObjectId,
+    ref: 'theaters'
+  },
+  showTimes: {
+    type: [Date]
+  }
 });
 
 const TimeSessions = model<ITimeSessions>("timeSessions", timeSessionsSchema);
