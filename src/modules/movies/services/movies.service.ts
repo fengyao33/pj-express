@@ -21,11 +21,16 @@ export class MoviesService {
     }
 
     let [theaterErr, theaters] = await on(TimeSesstions.find({movie: id})
-      .select('id date theaterInfo showTimes')
+      .select('id date showTimes')
       .populate({
         path:'theaterInfo',
         model: 'theaters',
         select: 'id name address',
+      })
+      .populate({
+        path:'rooms',
+        model: 'rooms',
+        select: 'id name type seats',
       })
       )
 
@@ -34,16 +39,40 @@ export class MoviesService {
     }
 
     if (!theaterErr) {
-      theaters = theaters.map(theater => {
+      let timeInfo: Array<{ room: string,type: string, seat: number, times: Date[] , time?: Date}> = []
+
+      theaters = theaters.map(theater=> {
+
         let plainTheater = theater.toObject()
-        plainTheater.theaterInfo.time = plainTheater.showTimes
+
+        theater.rooms.map( room => {
+          let tempRoom = {
+            room: room.name,
+            type: room.type,
+            seat: room.seats.length,
+            times: plainTheater.showTimes
+          }       
+          timeInfo.push(tempRoom)
+        })
+
+        timeInfo.map( item => {
+          item.times.map(t => {
+            item.time = t
+          })
+        })
+
+
+        plainTheater.theaterInfo.timeInfo = timeInfo
+        
+        delete plainTheater.times
         delete plainTheater.showTimes
+        delete plainTheater.rooms
         return plainTheater;
       });
     }
 
     return {
-      movie,
+      // movie,
       theaters ,
     }
 
