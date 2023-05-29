@@ -1,7 +1,8 @@
 import Movies from '@models/movies.model'
 import on from "await-handler";
 import getTableParams from "@utils/getTableParams";
-import Session, { ISession } from "@models/sessions.model"
+// import Session, { ISession } from "@models/sessions.model"
+import TimeSesstions from "@models/timeSesstions.model"
 import _ from 'lodash'
 
 
@@ -19,26 +20,31 @@ export class MoviesService {
       return errors;
     }
 
-    let [theaterErr, theater] = await on(Session.find({movieId: id})
-      .select('_id datetime theaterId')
+    let [theaterErr, theaters] = await on(TimeSesstions.find({movie: id})
+      .select('id date theaterInfo showTimes')
       .populate({
-        path:'theaterId',
-        select: 'name address timeInfo',
-        populate: {
-          path: 'timeInfo',
-          select: 'name type _id times',
-          model: 'rooms',
-          options: { lean: true }
-        }
-      }))
+        path:'theaterInfo',
+        model: 'theaters',
+        select: 'id name address',
+      })
+      )
 
     if(theaterErr) {
       return theaterErr;
     }
 
+    if (!theaterErr) {
+      theaters = theaters.map(theater => {
+        let plainTheater = theater.toObject()
+        plainTheater.theaterInfo.time = plainTheater.showTimes
+        delete plainTheater.showTimes
+        return plainTheater;
+      });
+    }
+
     return {
       movie,
-      theater 
+      theaters ,
     }
 
   }
