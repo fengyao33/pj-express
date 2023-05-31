@@ -78,7 +78,7 @@ export class MoviesService {
         //   rooms
         // }
           
-        })
+        // })
 
         return {
           movie,
