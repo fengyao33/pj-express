@@ -13,6 +13,7 @@ export interface ITheater extends Document {
   enable: boolean;
   timeInfo:Schema.Types.ObjectId[]
   showingOf:Schema.Types.ObjectId
+  sessionId:Schema.Types.ObjectId
 }
 
 const theaterSchema = new Schema<ITheater>({
@@ -42,6 +43,10 @@ const theaterSchema = new Schema<ITheater>({
   showingOf: {
     type: Schema.Types.ObjectId,
     ref: 'timesessions',
+  },
+  sessionId: {
+    type: Schema.Types.ObjectId,
+    ref: 'sessions',
   }
 
 });

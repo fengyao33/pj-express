@@ -22,75 +22,172 @@ export class MoviesService {
       return errors;
     }
 
-    let [theaterErr, theaters] = await on(TimeSesstions.find({movie: id})
-      .select('id date showTimes sessionId')
+    const today = new Date()
+    const nextWeek = new Date(today);
+    nextWeek.setDate(nextWeek.getDate() + 7)
+
+    console.log(nextWeek)
+
+    // console.log(33333, today, nextWeek)
+
+    let [theaterErr, theaters] = await on(TimeSesstions.find({
+      movie: id,
+      date: {
+        $gte: today,
+        $lte: nextWeek
+      }})
+      .select('id date movie theaterInfo')
       .populate({
         path:'theaterInfo',
-        model: 'theaters',
-        select: 'id name address',
+        // populate: {
+        //   select: '_id name address rooms',
+        //   path: 'theaterId'
+        // },
       })
       .populate({
-        path:'rooms',
-        model: 'rooms',
-        select: 'id name type seats',
+        path:'theater',
+        populate: {
+          select: '_id name address rooms',
+          path: 'theaterId'
+        },
       })
+      .lean()
       )
 
-    if(theaterErr) {
-      return theaterErr;
-    }
+      let temp = [Object]
 
-    if (!theaterErr) {
-      let timeInfo: Array<{ room: string,type: string, seat: number, times: Date[] , time?: Date, SessionOd?: ObjectId}> = []
+      _.map(theaters, item => {
+        // temp.push(item.theaterInfo)
+        delete item.theaterInfo
+      })
 
-      theaters = theaters.map(theater=> {
+      console.log(temp)
 
-        let plainTheater = theater.toObject()
 
-        theater.rooms.map( room => {
-          let tempRoom = {
-            room: room.name,
-            type: room.type,
-            seat: room.seats.length,
-            times: plainTheater.showTimes,
-            SessionId: plainTheater.sessionId
-          }       
-          timeInfo.push(tempRoom)
+      const groupedData = _.groupBy(theaters, item => item.date); //時間
+
+      const filteredData = _.map(groupedData, group => {
+        console.log(group)
+        const { movie, date, theater } = group[0]
+
+        // _.map(theater, item => {
+        // const { name, address, rooms } = item[0]
+        // return {
+        //   name,
+        //   address,
+        //   rooms
+        // }
+          
         })
 
-        timeInfo.map( item => {
-          item.times.map(t => {
-            item.time = t
-          })
-        })
+        return {
+          movie,
+          date,
+          theaterInfo: theater
+        }
+      })
+
+      
 
 
-        plainTheater.theaterInfo.timeInfo = timeInfo
+      // const filteredData = _.map(groupedData, group => {
+      //   // const { theaterInfo, ...rest } = group[0];
+      //   // const rooms = _.flatMap(group, item => item.rooms);
+      //   // const showTimes = _.flatMap(group, item => item.showTimes);
+      //   let theaterInfo = _.groupBy(group, item => item.theaterInfo._id)  //場地 高雄 台南
+      //   // console.log(444, theaterInfo)
+
+      //   let roomT = _.map(theaterInfo, item => {  //場地迴圈
+      //     const rooms = _.flatMap(item, room => {   //家廳為+時間
+      //       return item
+      //     })
+      //     return {
+      //       rooms
+      //     }
+      //   })
+
+      //   group.map(item => {
+      //     // console.log(item.theaterInfo)
+      //   })
+      //   return {
+          
+      //     theaterInfo: {
+      //       // ...rest,
+      //       // // ...theaterInfo,
+      //       // rooms,
+      //       // showTimes
+      //       roomT
+      //     }
+      //   };
+      // });
+
+    // _.map(theaters, item => {
+    //   console.log(item)
+    // })
+
+    // const processedData = theaters.map(item => {
+    //   const { theaterInfo, ...rest } = item;
+    //   return {
+    //     ...rest,
+    //     AAA: [theaterInfo]
+    //   };
+    // });
+
+    // if(theaterErr) {
+    //   return theaterErr;
+    // }
+
+    // if (!theaterErr) {
+    //   let timeInfo: Array<{ room: string,type: string, seat: number, times: Date[] , time?: Date, SessionOd?: ObjectId}> = []
+
+    //   theaters = theaters.map(theater=> {
+
+    //     let plainTheater = theater.toObject()
+
+    //     theater.rooms.map( room => {
+    //       let tempRoom = {
+    //         room: room.name,
+    //         type: room.type,
+    //         seat: room.seats.length,
+    //         times: plainTheater.showTimes,
+    //         SessionId: plainTheater.sessionId
+    //       }       
+    //       timeInfo.push(tempRoom)
+    //     })
+
+    //     timeInfo.map( item => {
+    //       item.times.map(t => {
+    //         item.time = t
+    //       })
+    //     })
 
 
-        delete plainTheater.times
-        delete plainTheater.showTimes
-        delete plainTheater.rooms
-        return plainTheater;
-      });
-    }
+    //     plainTheater.theaterInfo.timeInfo = timeInfo
+
+
+    //     delete plainTheater.times
+    //     delete plainTheater.showTimes
+    //     delete plainTheater.rooms
+    //     return plainTheater;
+    //   });
+    // }
 
 
     // 使用 Lodash 修改数据结构
-    theaters = _.map(theaters, theater => {
-      const theaterInfo = _.isArray(theater.theaterInfo)
-        ? theater.theaterInfo
-        : [theater.theaterInfo];
-      return {
-        ...theater,
-        theaterInfo,
-      };
-    });
+    // theaters = _.map(theaters, theater => {
+    //   const theaterInfo = _.isArray(theater.theaterInfo)
+    //     ? theater.theaterInfo
+    //     : [theater.theaterInfo];
+    //   return {
+    //     ...theater,
+    //     theaterInfo,
+    //   };
+    // });
     
 
     return {
-      movie,
-      theaters ,
+      // movie,
+      filteredData ,
     }
 
   }
