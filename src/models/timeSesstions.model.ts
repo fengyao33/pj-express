@@ -46,8 +46,10 @@ export const timeSessionsSchema = new Schema<ITimeSessions>({
 
 timeSessionsSchema.virtual('theater',{  
   ref: 'sessions',
-  foreignField: 'timeSesstions',
-  localField: '_id'
+  // foreignField: 'timeSesstions',
+  // localField: '_id'
+  foreignField: 'theaterId',
+  localField: 'theaterInfo'
 })
 
 const TimeSessions = model<ITimeSessions>("timeSessions", timeSessionsSchema);

@@ -6,6 +6,7 @@ import TimeSesstions from "@models/timeSesstions.model"
 import _ from 'lodash'
 import Session from '@models/sessions.model';
 import { ObjectId } from 'mongoose';
+import Theater from '@models/theaters.model';
 
 
 export class MoviesService {
@@ -26,66 +27,119 @@ export class MoviesService {
     const nextWeek = new Date(today);
     nextWeek.setDate(nextWeek.getDate() + 7)
 
-    console.log(nextWeek)
+    // 
+    // 改由影城開始
+    let [getTheaterIdErr, getTheaterId] = await on(Theater.find()
+    .select('_id')
+    )
+    
+    if (getTheaterIdErr) {
+      console.log('getTheaterId Error')
+    }
 
-    // console.log(33333, today, nextWeek)
+    let arrayArr = _.map(getTheaterId, p => p._id)
+    
+    let sessionArr = [Object]
 
-    let [theaterErr, theaters] = await on(TimeSesstions.find({
-      movie: id,
-      date: {
-        $gte: today,
-        $lte: nextWeek
-      }})
-      .select('id date movie theaterInfo')
-      .populate({
-        path:'theaterInfo',
-        // populate: {
-        //   select: '_id name address rooms',
-        //   path: 'theaterId'
-        // },
-      })
-      .populate({
-        path:'theater',
-        populate: {
-          select: '_id name address rooms',
-          path: 'theaterId'
-        },
-      })
-      .lean()
+    // 拿影城撈出資料
+    _.map(arrayArr, async tid => {
+      let [theaterErr, tSession] = await on(Session.find({
+          // movieId: id,
+          // theaterId: tid,
+          // date: {
+          //   $gte: today,
+          //   $lte: nextWeek
+          // }
+        })
+        // .populate({
+        //   path:'theaterId',
+        // })
+        // .lean()
       )
 
-      let temp = [Object]
+      if (theaterErr) {
+        console.log('theaterErr')
+      }
+      let ttt = {
+        ...tSession
+      }
+      sessionArr.push(ttt)
+    })
 
-      _.map(theaters, item => {
-        // temp.push(item.theaterInfo)
-        delete item.theaterInfo
-      })
+// //
+//   let updatedData = _.cloneDeep(tSession)
 
-      console.log(temp)
+//   let newRooms = []  
+//   let nName
+//   let nAddress
+
+//   updatedData.map(obj => {    
+//     newRooms = obj.theaterId.rooms.map((room) => {
+//       return {
+//         ...room,
+//         datetime: obj.datetime
+//       }
+//     })
+//   })
+
+//   let test = {
+//     nName: updatedData[0].theaterId.name,
+//     nAddress: updatedData[0].theaterId.address,
+//     rooms: newRooms
+//   }
+
+//   console.log(nName)
+// //
 
 
-      const groupedData = _.groupBy(theaters, item => item.date); //時間
+      // remove same
+      // _.map(theaters, item => {
+      //   // temp.push(item.theaterInfo)
+      //   delete item.theaterInfo
+      // })
 
-      const filteredData = _.map(groupedData, group => {
-        console.log(group)
-        const { movie, date, theater } = group[0]
 
-        // _.map(theater, item => {
-        // const { name, address, rooms } = item[0]
-        // return {
-        //   name,
-        //   address,
-        //   rooms
-        // }
+
+      // const groupedData = _.groupBy(theaters, item => item.date); //依照時間整理time:  [{}{}]
+
+      // const filteredData = _.map(groupedData, group => { //依照時間整理 跑圈
+      //   const { movie, date, theater } = group[0]  //整合影城 1. theater[]> 拿電影時間 datetime   2. theaterId.rooms[] add time
+
+
+      //   let tArr = [Object] //陣列影城
+
+      //   let test = _.map(theater, item => {            
+      //     let movieTime = item.datetime
+      //     let theaterName = item.theaterId.name
+      //     let theaterAddress = item.theaterId.address
+
+      //     let rooms = item.theaterId.rooms.map( room => {
+      //       room.seatTotal = room.seats.length || 0
+      //       delete room.seats
+      //       let eachTheater = {
+      //         ...room,
+      //         movieTime,
+      //         theaterName,
+      //         theaterAddress
+      //       }
+      //       tArr.push(eachTheater)
+      //     })
+      //     return {
+      //       ROOM:{
+      //         tArr
+      //       }
+      //     }
           
-        // })
+      //   })
 
-        return {
-          movie,
-          date,
-          theaterInfo: theater
-        }
-      })
+
+      //   return {
+      //     test
+      //     // movie,
+      //     // date,
+      //     // theaterInfo: theater
+      //   }
+      // })
 
       
 
@@ -187,7 +241,7 @@ export class MoviesService {
 
     return {
       // movie,
-      filteredData ,
+      sessionArr ,
     }
 
   }
