@@ -89,7 +89,7 @@ export async function postMember(
   try {
     //建立帳號email、密碼是必填存在
     const body = req.body;
-    const { name, email, sex, birth, mobile, hobby, password } = body;
+    const { name, email, sex, birth, mobile, hobby, password, roles } = body;
     checkRequireField({
       checkArr: ["email", "password"],
       obj: body,
@@ -99,7 +99,7 @@ export async function postMember(
     }
     const hashPassword: string = await bcrypt.hash(password, 12);
     const newProfile = _.omitBy(
-      { email, name, sex, birth, mobile, hobby },
+      { email, name, sex, birth, mobile, hobby, roles },
       _.isEmpty
     );
     const result = await User.create({
