@@ -40,7 +40,8 @@ export async function index(
       skip = (parseInt(pageNo as string) - 1) * parseInt(pageSize as string)
 
     }
-     let [ result, tableParams ] = await finder.findAll(skip, pageSize, isCurrent, pageNo)
+    let [ result, tableParams ] = await finder.findAll(skip, pageSize, isCurrent, pageNo)
+    
 
 
     res.json({

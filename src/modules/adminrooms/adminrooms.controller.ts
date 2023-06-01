@@ -13,7 +13,7 @@ export async function index(req: Request, res: Response, next: NextFunction): Pr
   try {
     const { theaterId } = req.query;
     const finder = new AdminroomsService();
-    const rooms = await finder.findAll(theaterId);
+    const rooms = await finder.findAll(theaterId as string);
     successHandler(res, rooms as Object);
   } catch (err: any) {
     handleErrorMiddleware(new ErrorHandler(400, '查無此影城'), req, res, next);
@@ -31,7 +31,7 @@ export async function show(req: Request, res: Response, next: NextFunction): Pro
     const { id } = req.params;
     const { theaterId } = req.query;
     const finder = new AdminroomsService();
-    const room = await finder.findOne(id, theaterId);
+    const room = await finder.findOne(id, theaterId as string);
     successHandler(res, room as Object);
   } catch (err) {
     handleErrorMiddleware(new ErrorHandler(400, '查無此影廳'), req, res, next);

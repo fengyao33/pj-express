@@ -89,4 +89,9 @@ export async function destroy(req: Request, res: Response, next: NextFunction): 
   } catch (err: any) {
     handleErrorMiddleware(new ErrorHandler(400, err.message), req, res, next);
   }
+
+}
+
+export async function fileUpload(req: Request, res: Response, next: NextFunction): Promise<void> {
+  console.log(111)
 }
