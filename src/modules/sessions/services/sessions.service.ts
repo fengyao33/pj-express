@@ -98,6 +98,9 @@ export class SessionsService {
       }
     })
 
-    return err == undefined ? seatsQ : err
+    return err != undefined ? err: {
+      available:seatsQ.filter(s=>s.situation=="可販售"&&!s.isSold),
+      unAvailable:seatsQ.filter(s=>s.situation!="可販售"||s.isSold)
+    }
   }
 }
