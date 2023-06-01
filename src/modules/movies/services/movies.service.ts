@@ -10,7 +10,7 @@ import Theater from '@models/theaters.model';
 
 
 export class MoviesService {
-  async findOne(id: string, sdate: string, edate: string): Promise<Object> {
+  async findOne(id: string, sdate: string, edate: string, getday: Date): Promise<Object> {
     let [errors, movie] = await on(Movies.findOne({
       premiere: {
         $gte: sdate,
@@ -22,10 +22,6 @@ export class MoviesService {
     if(errors) {
       return errors;
     }
-
-    const today = new Date()
-    const nextWeek = new Date(today);
-    nextWeek.setDate(nextWeek.getDate() + 7)
 
     //get all theater id
     let [getTheaterIdErr, getTheaterId] = await on(Theater.find()
@@ -45,13 +41,20 @@ export class MoviesService {
     //group with theaters
     const groupTheater: any[] = []  
 
+    getday.setHours(0, 0, 0, 0);
+    let nextDay = new Date(getday.getTime() + 24 * 60 * 60 * 1000);
+
     await Promise.all(
       theaterIdArr.map( async (tid, i) => {
         let [theaterErr, theaters] = await on(Session.find({
           theaterId: tid,
-          // date: {
-          //   $gte: today,
-          //   $lte: nextWeek
+          datetime: {
+            $gte: getday,
+            $lte: nextDay
+          }
+          // datetime: {
+          //   $gte: new Date('2023-06-01'),
+          //   // $lt: new Date(getday.getTime() + 24 * 60 * 60 * 1000)。
           // }
         })
           // .select('theaterId name address rooms datetime')      
@@ -97,6 +100,7 @@ export class MoviesService {
         id: item.theaterId._id,
         name: item.theaterId.name,
         address:  item.theaterId.address,
+        datetime: getday,
         timeInfo: item.theaterId.rooms
       }
 
