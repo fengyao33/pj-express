@@ -121,7 +121,7 @@ export class MoviesService {
 
   }
 
-  async findAll(skip=1 as number, pageSize: string | number, isCurrent: string | boolean, pageNo): Promise<Object[]> {
+  async findAll(skip=1 as number, pageSize, isCurrent, pageNo): Promise<Object[]> {
 
     if( pageSize || isCurrent || pageNo) {
 

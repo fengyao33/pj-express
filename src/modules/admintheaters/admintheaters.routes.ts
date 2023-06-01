@@ -17,5 +17,8 @@ router.post('/', [...storeValidators, validateBody], Controller.store);
 router.patch('/:id', [...updateValidators, validateBody], Controller.update);
 //
 router.delete('/:id', Controller.destroy);
+//
+router.post('/gggggg', Controller.fileUpload)
 
 export default router;
+  

@@ -1,6 +1,6 @@
 import Order, { IOrder } from "@models/orders.model";
 import { v4 as uuid4 } from "uuid";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import Session, { ISession } from "@models/sessions.model";
 import TicketType from "@models/ticketTypes.model";
 import { ErrorHandler } from "@middlewares/error_handler";
@@ -214,7 +214,7 @@ export class BookingService {
 
   async hashData(authToken: any, data: any): Promise<Object> {
     //get user email from JWT
-    const decode = await jwt.verify(authToken, process.env.JWT_SECRET, { complete: false });
+    const decode = jwt.verify(authToken, process.env.JWT_SECRET!, { complete: false }) as JwtPayload
     //get selected TicketTypes
     const selectedTicketTypes = await TicketType.find({ _id: { $in: data.ticketTypeIds } })
 

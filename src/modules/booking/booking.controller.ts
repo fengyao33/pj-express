@@ -24,7 +24,7 @@ export async function index(req: Request, res: Response, next: NextFunction): Pr
     handleErrorMiddleware(err,req,res,next)
     return
   }
-  successHandler(res, await cashService.hashData(req.headers.authorization.split(' ')[1],req.body))
+  successHandler(res, await cashService.hashData(req.headers.authorization?.split(' ')[1]??'',req.body))
 }
 
 /**

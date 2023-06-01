@@ -25,7 +25,7 @@ export async function show(req: Request, res: Response, next: NextFunction): Pro
   try {
     const { theaterId, roomId } = req.query;
     const finder = new AdminseatsService();
-    const room = await finder.findOne(theaterId, roomId);
+    const room = await finder.findOne(theaterId as string, roomId as string);
     successHandler(res, room as ISeat[]);
   } catch (err) {
     handleErrorMiddleware(new ErrorHandler(400, '查無此影廳'), req, res, next);

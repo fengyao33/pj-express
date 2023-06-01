@@ -1,7 +1,7 @@
 import User from "@models/user.model";
 import bcrypt from "bcryptjs";
 import _ from "lodash";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { ErrorHandler } from "@middlewares/error_handler";
 
 interface NewProfile {
@@ -49,7 +49,7 @@ export class UserauthService {
 
   async getPurchaseRecord(authToken, page, limit): Promise<Object> {
     //get user email from JWT
-    const decode = await jwt.verify(authToken, process.env.JWT_SECRET, { complete: false });
+    const decode = await jwt.verify(authToken, process.env.JWT_SECRET!, { complete: false }) as JwtPayload
     const user: any = await User.findOne({ email: decode.email.toLowerCase() }).populate({
       path: "orderId", options: {
         sort: { orderDatetime: -1 },
@@ -78,7 +78,7 @@ export class UserauthService {
 
   async getBonusRecord(authToken, page, limit): Promise<Object> {
     //get user email from JWT
-    const decode = await jwt.verify(authToken, process.env.JWT_SECRET, { complete: false });
+    const decode = await jwt.verify(authToken, process.env.JWT_SECRET!, { complete: false }) as JwtPayload
     const user: any = await User.findOne({ email: decode.email.toLowerCase() }).populate({
       path: "orderId", options: {
         sort: { orderDatetime: -1 },
