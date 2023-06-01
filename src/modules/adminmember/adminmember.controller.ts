@@ -127,13 +127,13 @@ export async function updateMember(
     //更新email不可為空
     const { id } = req.params;
     const body = req.body;
-    const { name, email, sex, birth, mobile, hobby } = body;
+    const { name, email, sex, birth, mobile, hobby, roles } = body;
     checkRequireField({
       checkArr: ["email"],
       obj: body,
     });
     const newProfile = _.omitBy(
-      { name, email, sex, birth, mobile, hobby },
+      { name, email, sex, birth, mobile, hobby, roles },
       _.isEmpty
     );
     if (_.isEmpty(newProfile)) throw new Error("沒有需要更新的資料");
