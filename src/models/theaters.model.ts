@@ -11,8 +11,6 @@ export interface ITheater extends Document {
   description: string;
   traffic: string;
   enable: boolean;
-  timeInfo:Schema.Types.ObjectId[]
-  showingOf:Schema.Types.ObjectId
 }
 
 const theaterSchema = new Schema<ITheater>({
@@ -34,15 +32,18 @@ const theaterSchema = new Schema<ITheater>({
     type: Boolean,
     default: true,
   },
-  timeInfo: {
-    type: [Schema.Types.ObjectId],
-    ref: 'Room'
-  },
-  //上映資訊
-  showingOf: {
-    type: Schema.Types.ObjectId,
-    ref: 'timesessions',
-  }
+  // timeInfo: {
+  //   type: [Schema.Types.ObjectId],
+  //   ref: 'Room'
+  // },
+  // showingOf: {
+  //   type: Schema.Types.ObjectId,
+  //   ref: 'timesessions',
+  // },
+  // sessionId: {
+  //   type: Schema.Types.ObjectId,
+  //   ref: 'sessions',
+  // }
 
 });
 

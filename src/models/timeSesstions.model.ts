@@ -24,10 +24,10 @@ export const timeSessionsSchema = new Schema<ITimeSessions>({
     type:  [Schema.Types.ObjectId],
     ref: 'Room'
   },
-  sessionId: {
-    type:  Schema.Types.ObjectId,
-    ref: 'sessions'
-  },
+  // sessionId: {
+  //   type:  Schema.Types.ObjectId,
+  //   ref: 'sessions'
+  // },
   theaterInfo: {
     type:  Schema.Types.ObjectId,
     ref: 'theaters'
@@ -35,7 +35,22 @@ export const timeSessionsSchema = new Schema<ITimeSessions>({
   showTimes: {
     type: [Date]
   }
-});
+},
+{
+  versionKey: false,
+  toJSON: { virtuals: true},
+  toObject: {virtuals: true},
+}
+
+);
+
+timeSessionsSchema.virtual('theater',{  
+  ref: 'sessions',
+  // foreignField: 'timeSesstions',
+  // localField: '_id'
+  foreignField: 'theaterId',
+  localField: 'theaterInfo'
+})
 
 const TimeSessions = model<ITimeSessions>("timeSessions", timeSessionsSchema);
 

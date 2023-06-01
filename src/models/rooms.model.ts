@@ -8,7 +8,6 @@ export interface IRoom extends Document {
   seats: ISeat[],
   ticketTypeIds: Schema.Types.ObjectId[],
   type: string,
-  times: string[]
 }
 
 export const roomSchema = new Schema<IRoom>({
@@ -30,7 +29,17 @@ export const roomSchema = new Schema<IRoom>({
     type: String,
     required: [true, '類型名稱不可為空']
   },
-  times: Array
+},
+{
+  versionKey: false,
+  toJSON: { virtuals: true},
+  toObject: {virtuals: true},
 });
+
+roomSchema.virtual('session',{
+  ref: 'sessions',
+  foreignField: 'theaterId',
+  localField: '_id'
+})
 
 export const Room = model<IRoom>("rooms", roomSchema);

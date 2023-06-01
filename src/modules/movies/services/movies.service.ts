@@ -6,10 +6,11 @@ import TimeSesstions from "@models/timeSesstions.model"
 import _ from 'lodash'
 import Session from '@models/sessions.model';
 import { ObjectId } from 'mongoose';
+import Theater from '@models/theaters.model';
 
 
 export class MoviesService {
-  async findOne(id: string, sdate: string, edate: string): Promise<Object> {
+  async findOne(id: string, sdate: string, edate: string, getday: Date): Promise<Object> {
     let [errors, movie] = await on(Movies.findOne({
       premiere: {
         $gte: sdate,
@@ -22,75 +23,100 @@ export class MoviesService {
       return errors;
     }
 
-    let [theaterErr, theaters] = await on(TimeSesstions.find({movie: id})
-      .select('id date showTimes sessionId')
-      .populate({
-        path:'theaterInfo',
-        model: 'theaters',
-        select: 'id name address',
-      })
-      .populate({
-        path:'rooms',
-        model: 'rooms',
-        select: 'id name type seats',
-      })
-      )
-
-    if(theaterErr) {
-      return theaterErr;
-    }
-
-    if (!theaterErr) {
-      let timeInfo: Array<{ room: string,type: string, seat: number, times: Date[] , time?: Date, SessionOd?: ObjectId}> = []
-
-      theaters = theaters.map(theater=> {
-
-        let plainTheater = theater.toObject()
-
-        theater.rooms.map( room => {
-          let tempRoom = {
-            room: room.name,
-            type: room.type,
-            seat: room.seats.length,
-            times: plainTheater.showTimes,
-            SessionId: plainTheater.sessionId
-          }       
-          timeInfo.push(tempRoom)
-        })
-
-        timeInfo.map( item => {
-          item.times.map(t => {
-            item.time = t
-          })
-        })
-
-
-        plainTheater.theaterInfo.timeInfo = timeInfo
-
-
-        delete plainTheater.times
-        delete plainTheater.showTimes
-        delete plainTheater.rooms
-        return plainTheater;
-      });
-    }
-
-
-    // 使用 Lodash 修改数据结构
-    theaters = _.map(theaters, theater => {
-      const theaterInfo = _.isArray(theater.theaterInfo)
-        ? theater.theaterInfo
-        : [theater.theaterInfo];
-      return {
-        ...theater,
-        theaterInfo,
-      };
-    });
+    //get all theater id
+    let [getTheaterIdErr, getTheaterId] = await on(Theater.find()
+    .select('_id')
+    )
     
+    if (getTheaterIdErr) {
+      console.log('getTheaterId Error')
+      return {
+        message: 'get TheaterId error has occurred'
+      }
+    }
+
+    // use theaterid filter session
+    let theaterIdArr = _.map(getTheaterId, p => p._id) 
+
+    //group with theaters
+    const groupTheater: any[] = []  
+
+    getday.setHours(0, 0, 0, 0);
+    let nextDay = new Date(getday.getTime() + 24 * 60 * 60 * 1000);
+
+    await Promise.all(
+      theaterIdArr.map( async (tid, i) => {
+        let [theaterErr, theaters] = await on(Session.find({
+          theaterId: tid,
+          datetime: {
+            $gte: getday,
+            $lte: nextDay
+          }
+          // datetime: {
+          //   $gte: new Date('2023-06-01'),
+          //   // $lt: new Date(getday.getTime() + 24 * 60 * 60 * 1000)。
+          // }
+        })
+          // .select('theaterId name address rooms datetime')      
+          .populate({
+            path:'theaterId',
+            // populate: {
+            //   select: '_id name address rooms',
+            //   path: 'theaterId'
+            // },
+          })
+          // .populate({
+          //   path:'theater',
+          //   populate: {
+          //     select: '_id name address rooms',
+          //     path: 'theaterId'
+          //   },
+          // })
+          .lean()
+        )
+
+        if(theaterErr){
+          console.log('get sessions with Theater Error')
+          return {
+            message: 'get sessions with Theater Error'
+          }
+        }
+        groupTheater.push(theaters[0])
+      })  
+    )
+
+    // Organize
+    let theaterInfo: Object[]  = [] 
+    let combinationTheater  = {}
+
+    groupTheater.map((item, i)=> {          
+      if(!item) return
+
+        item.theaterId.rooms.map( room => {
+        room.datetime = item.datetime
+      })
+
+      combinationTheater = {   
+        id: item.theaterId._id,
+        name: item.theaterId.name,
+        address:  item.theaterId.address,
+        datetime: getday,
+        timeInfo: item.theaterId.rooms
+      }
+
+      theaterInfo.push(combinationTheater)
+    })
+
+    // theater:[
+    //   {
+    //     datetime
+    //     // theaterInfo
+    //   }
+    // ]
 
     return {
       movie,
-      theaters ,
+      theaterInfo ,
     }
 
   }
