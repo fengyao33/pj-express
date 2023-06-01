@@ -2,7 +2,7 @@ import isAuth from "@middlewares/isAuth";
 import { validateBody } from '@middlewares/validator';
 import { Router } from 'express';
 import * as Controller from './user.controller';
-import { loginValidators, signupValidators, updatePasswordValidators, updateProfileValidators } from './user.validator';
+import { forgetPasswordValidators, loginValidators, signupValidators, updatePasswordValidators } from './user.validator';
 
 const router = Router()
 
@@ -14,7 +14,9 @@ router.post('/password', [isAuth, ...updatePasswordValidators, validateBody], Co
 
 router.get('/profile/:email', isAuth, Controller.getProfile)
 
-router.patch('/profile', [isAuth, ...updateProfileValidators, validateBody], Controller.updateProfile)
+router.patch('/profile', [isAuth, validateBody], Controller.updateProfile)
+
+router.post('/password/forget', [...forgetPasswordValidators, validateBody], Controller.getPasswordMail)
 
 router.get('/purchaseRecord', isAuth, Controller.getPurchaseRecord)
 router.get('/bonusRecord', isAuth, Controller.getBonusRecord)

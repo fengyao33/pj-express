@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import dotenvParseVariables from 'dotenv-parse-variables'
 
-let env: any =dotenv.config()
+let env: any = dotenv.config()
 if (env.error) console.log(env.error)
 env = dotenvParseVariables(env.parsed!)
 
@@ -23,6 +23,10 @@ export const settings = {
     PASSWORD: env.MAIL_PASSWORD,
     FROM_ADDRESS: env.MAIL_FROM_ADDRESS,
     FROM_NAME: env.MAIL_FROM_NAME,
+    MAIL_CLIENT_ID: env.MAIL_CLIENT_ID,
+    MAIL_CLIENT_SECRECT: env.MAIL_CLIENT_SECRECT,
+    MAIL_REFRESH_TOKEN: env.MAIL_REFRESH_TOKEN,
+    MAIL_ACCESS_TOKEN: env.MAIL_ACCESS_TOKEN
   },
   JWT: {
     JWT_EXPIRE_DAYS: env.JWT_EXPIRE_DAYS,
