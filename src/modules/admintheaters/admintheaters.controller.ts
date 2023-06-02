@@ -1,8 +1,12 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response, } from 'express';
 import { AdmintheatersService } from './services';
 import successHandler from '@middlewares/success_handler';
 import { ErrorHandler, handleErrorMiddleware } from '@middlewares/error_handler';
 import { ITheater } from '@models/theaters.model';
+import { v4 as uuidv4 } from 'uuid';
+import admin  from '@utils/fileBase'
+import { GetSignedUrlConfig } from '@google-cloud/storage';
+
 
 /**
  * Return all entities
@@ -92,6 +96,39 @@ export async function destroy(req: Request, res: Response, next: NextFunction): 
 
 }
 
-export async function fileUpload(req: Request, res: Response, next: NextFunction): Promise<void> {
-  console.log(111)
+
+export async function fileUpload(req: any, res: Response, next: NextFunction): Promise<void> {
+  const uploadFile = new AdmintheatersService();
+
+  if(!req.file){
+    return handleErrorMiddleware(new ErrorHandler(400, 'file empty'), req, res, next)
+  }
+
+  const bucket = admin.storage().bucket()
+
+  const file = req.file
+  const blob = bucket.file(`image/${uuidv4()}.${file.originalname.split('.').pop()}`)
+  const blobStream = blob.createWriteStream()
+  
+  blobStream.on('finish', ()=> {
+    const config:GetSignedUrlConfig  = {
+      action: 'read',
+      expires: '12-31-2500'
+    }
+
+    blob.getSignedUrl(config, (err, fileUrl)=>{
+      res.send({
+        fileUrl
+      })
+    })
+
+  })
+
+  blobStream.on('error', ()=> {
+    return handleErrorMiddleware(new ErrorHandler(400, 'file upload error'), req, res, next)
+  })
+
+  
+  blobStream.end(file.buffer)
+
 }

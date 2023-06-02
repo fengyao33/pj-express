@@ -1,13 +1,11 @@
 import { settings } from '@config/settings';
-import { initializeApp, applicationDefault, cert } from 'firebase-admin/app'
-import { getStorage } from 'firebase-admin/storage';
+import * as admin from 'firebase-admin';
 
-
-const firebaseConfig = {
+const config = {
   type: settings.FIREBASE.TYPE,
   project_id: settings.FIREBASE.PROJECT_ID,
-  private_key_id: settings.FIREBASE.PROJECT_KEY_ID,
-  private_key: settings.FIREBASE.PROJECT_KEY,
+  private_key_id: settings.FIREBASE.PRIVATE_KEY_ID,
+  private_key: settings.FIREBASE.PRIVATE_KEY.replace(/\\n/g, '\n'),
   client_email:settings.FIREBASE.CLIENT_EMAIL,
   client_id: settings.FIREBASE.CLIENT_ID,
   auth_uri: settings.FIREBASE.AUTH_URL,
@@ -17,21 +15,12 @@ const firebaseConfig = {
   universe_domain: settings.FIREBASE.UNIVERSE,
 }
 
-const ServiceAccount = {
-  clientEmail:settings.FIREBASE.CLIENT_EMAIL,
-  private_key: settings.FIREBASE.PROJECT_KEY,
-  project_id: settings.FIREBASE.PROJECT_ID,
-}
-
-const fileStore = initializeApp({
-  credential: cert(ServiceAccount),
-  storageBucket: '<BUCKET_NAME>.appspot.com'
+admin.initializeApp({
+  credential: admin.credential.cert(config as admin.ServiceAccount),
+  storageBucket: `${settings.FIREBASE.PROJECT_ID}.appspot.com`
 })
 
-const bucket = getStorage(fileStore).bucket();
-
-
-export default bucket
+export default admin
 
 
 
