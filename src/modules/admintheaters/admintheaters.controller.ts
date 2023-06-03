@@ -99,7 +99,7 @@ export async function destroy(req: Request, res: Response, next: NextFunction): 
 
 export async function fileUpload(req: any, res: Response, next: NextFunction): Promise<void> {
   const uploadFile = new AdmintheatersService();
-
+  console.log('file', req)
   if(!req.file){
     return handleErrorMiddleware(new ErrorHandler(400, 'file empty'), req, res, next)
   }
