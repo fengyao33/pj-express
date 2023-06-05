@@ -157,8 +157,8 @@ export async function updateProfile(
  */
 export async function getPurchaseRecord(req: Request, res: Response, next: NextFunction): Promise<void> {
   const finder = new UserauthService()
-  const result = await finder.getPurchaseRecord((req.headers.authorization as string).split(' ')[1], req.query.page, req.query.limit)
-  if (result instanceof ErrorHandler) handleErrorMiddleware(result, req, res, next)
+  const result = await finder.getPurchaseRecord(req.headers.authorization?.split(' ')[1],req.query.page,req.query.limit)
+  if(result instanceof ErrorHandler)handleErrorMiddleware(result,req,res,next)
   else successHandler(res, result)
 }
 
@@ -170,8 +170,8 @@ export async function getPurchaseRecord(req: Request, res: Response, next: NextF
  */
 export async function getBonusRecord(req: Request, res: Response, next: NextFunction): Promise<void> {
   const finder = new UserauthService()
-  const result = await finder.getBonusRecord((req.headers.authorization as string).split(' ')[1], req.query.page, req.query.limit)
-  if (result instanceof ErrorHandler) handleErrorMiddleware(result, req, res, next)
+  const result = await finder.getBonusRecord(req.headers.authorization?.split(' ')[1],req.query.page,req.query.limit)
+  if(result instanceof ErrorHandler)handleErrorMiddleware(result,req,res,next)
   else successHandler(res, result)
 }
 

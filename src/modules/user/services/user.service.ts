@@ -2,7 +2,7 @@ import { ErrorHandler } from "@middlewares/error_handler";
 import User from "@models/user.model";
 import mailer from '@utils/mailer';
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import _ from "lodash";
 
 interface NewProfile {
@@ -57,8 +57,8 @@ export class UserauthService {
 
   async getPurchaseRecord(authToken, page, limit): Promise<Object> {
     //get user email from JWT
-    const decode = await jwt.verify(authToken, (process.env.JWT_SECRET as string), { complete: false });
-    const user: any = await User.findOne({ email: decode["email"].toLowerCase() }).populate({
+    const decode = await jwt.verify(authToken, process.env.JWT_SECRET!, { complete: false }) as JwtPayload
+    const user: any = await User.findOne({ email: decode.email.toLowerCase() }).populate({
       path: "orderId", options: {
         sort: { orderDatetime: -1 },
         skip: page, limit: limit,
@@ -86,8 +86,8 @@ export class UserauthService {
 
   async getBonusRecord(authToken, page, limit): Promise<Object> {
     //get user email from JWT
-    const decode = await jwt.verify(authToken, (process.env.JWT_SECRET as string), { complete: false });
-    const user: any = await User.findOne({ email: decode["email"].toLowerCase() }).populate({
+    const decode = await jwt.verify(authToken, process.env.JWT_SECRET!, { complete: false }) as JwtPayload
+    const user: any = await User.findOne({ email: decode.email.toLowerCase() }).populate({
       path: "orderId", options: {
         sort: { orderDatetime: -1 },
         populate: { path: "sessionId", options: { populate: { path: "theaterId" } } }

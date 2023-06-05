@@ -17,7 +17,7 @@ export class AdminroomsService {
     return theater.rooms.shift();
   }
 
-  async findAll(theaterId: string): Promise<Object | unknown> {
+  async findAll(theaterId: string ): Promise<Object | unknown> {
     const theater = await Theater.findById(theaterId).select('rooms.name rooms.enable rooms._id');
     if (!theater) throw new Error('查無此影城');
 
