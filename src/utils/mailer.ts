@@ -3,12 +3,11 @@ import nodemailer from 'nodemailer';
 
 function mail(email, newPassword) {
     const mailTransport = nodemailer.createTransport({
-        service: 'gmail',
         host: 'smtp.gmail.com',
         port: 465,
         secure: true,
         auth: {
-            type: 'OAuth2',
+            type: "OAuth2",
             user: settings.MAILER.USERNAME,
             clientId: settings.MAILER.MAIL_CLIENT_ID,
             clientSecret: settings.MAILER.MAIL_CLIENT_SECRECT,
@@ -23,8 +22,11 @@ function mail(email, newPassword) {
         html: `<html><body style="color: black"><h2>Cinek 新密碼</h2><strong>密碼：${newPassword}</strong><p style = "color:red">* 請儘速登入並修改密碼。</p></body></html>`
     }
     mailTransport.sendMail(options, (err, res) => {
-        if (err) return err;
-        return res.response;
+        if (err) {
+            return console.log(err);
+        } else {
+            console.log(JSON.stringify(res));
+        }
     });
 }
 
