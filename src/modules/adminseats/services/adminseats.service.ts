@@ -1,5 +1,6 @@
 import { SeatExamples, ISeat } from '@models/seats.model';
 import Theater from '@models/theaters.model';
+import TicketTypes from '@models/ticketTypes.model';
 
 export class AdminseatsService {
   async findOne(theaterId: string, roomId: string): Promise<ISeat[] | unknown> {
@@ -23,8 +24,8 @@ export class AdminseatsService {
     return result;
   }
 
-  async findExample(): Promise<Object[]> {
-    const result = await SeatExamples.aggregate([
+  async findExample(): Promise<Object> {
+    const seats = await SeatExamples.aggregate([
       {
         $project: {
           name: 1,
@@ -32,6 +33,24 @@ export class AdminseatsService {
         },
       },
     ]);
+
+    const ticketTypes = await TicketTypes.aggregate([
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          content: 1,
+          ticketCount: 1
+        },
+      },
+    ]);
+
+
+    let result = {
+      seats,
+      ticketTypes
+    }
+
     return result;
   }
 
