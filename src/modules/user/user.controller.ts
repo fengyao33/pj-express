@@ -6,12 +6,6 @@ import _ from 'lodash';
 import { UserauthService } from './services';
 
 
-/**
- * User Sign Up
- * @param req
- * @param res
- * @param next
- */
 export async function singup(
   req: Request,
   res: Response,
@@ -55,12 +49,6 @@ export async function singup(
   }
 }
 
-/**
- * User Login
- * @param req
- * @param res
- * @param next
- */
 export async function login(
   req: Request,
   res: Response,
@@ -85,12 +73,6 @@ export async function login(
   }
 }
 
-/**
- * Update Password
- * @param req
- * @param res
- * @param next
- */
 export async function updatePassword(
   req: Request,
   res: Response,
@@ -123,12 +105,6 @@ export async function updatePassword(
   }
 }
 
-/**
- * Update User Profile
- * @param req
- * @param res
- * @param next
- */
 export async function getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const { email: userEmail } = req.params;
@@ -149,12 +125,6 @@ export async function getProfile(req: Request, res: Response, next: NextFunction
   }
 }
 
-/**
- * Update User Profile
- * @param req
- * @param res
- * @param next
- */
 export async function updateProfile(
   req: Request,
   res: Response,
@@ -203,4 +173,21 @@ export async function getBonusRecord(req: Request, res: Response, next: NextFunc
   const result = await finder.getBonusRecord(req.headers.authorization?.split(' ')[1],req.query.page,req.query.limit)
   if(result instanceof ErrorHandler)handleErrorMiddleware(result,req,res,next)
   else successHandler(res, result)
+}
+
+export async function getPasswordMail(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { email } = req.body;
+    const updater = new UserauthService();
+    const result: any = await updater.updatePasswordAndSentMail(email);
+    successHandler(
+      res,
+      {
+        email,
+      },
+      200
+    );
+  } catch (error: any) {
+    handleErrorMiddleware(new ErrorHandler(400, error.message), req, res, next);
+  }
 }

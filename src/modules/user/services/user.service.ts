@@ -1,8 +1,9 @@
-import User from "@models/user.model";
-import bcrypt from "bcryptjs";
-import _ from "lodash";
-import jwt, { JwtPayload } from "jsonwebtoken";
 import { ErrorHandler } from "@middlewares/error_handler";
+import User from "@models/user.model";
+import mailer from '@utils/mailer';
+import bcrypt from "bcryptjs";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import _ from "lodash";
 
 interface NewProfile {
   name: string;
@@ -47,6 +48,13 @@ export class UserauthService {
     return result;
   }
 
+  async updatePasswordAndSentMail(email: string) {
+    if (!email) throw new Error("輸入註冊信箱來獲得新密碼");
+    const newPassword = (Math.random()).toString(36).substring(2);
+    this.updatePassword(email, newPassword);
+    mailer(email, newPassword);
+  }
+
   async getPurchaseRecord(authToken, page, limit): Promise<Object> {
     //get user email from JWT
     const decode = await jwt.verify(authToken, process.env.JWT_SECRET!, { complete: false }) as JwtPayload
@@ -57,7 +65,7 @@ export class UserauthService {
         populate: { path: "sessionId", options: { populate: [{ path: "theaterId" }, { path: "movieId" }, { path: "ticketTypeIds" }] } }
       }
     })
-    if(user==undefined)return new ErrorHandler(400,'沒有此User')
+    if (user == undefined) return new ErrorHandler(400, '沒有此User')
     return user.orderId.map(order => {
       return {
         movieName: order.sessionId.movieId.movieCName,//電影名稱
@@ -85,16 +93,16 @@ export class UserauthService {
         populate: { path: "sessionId", options: { populate: { path: "theaterId" } } }
       }
     })
-    if(user==undefined)return new ErrorHandler(400,'沒有此User')
+    if (user == undefined) return new ErrorHandler(400, '沒有此User')
     const returnOrders = user.orderId.filter(order => order.status == "未取票" || order.status == "已取票").
-    map(order => {
-      return {
-        theaterName: order.sessionId.theaterId.name, //影城名稱
-        orderNumber: order.orderId, //訂單編號
-        orderDate: order.orderDatetime, //訂單時間
-        bonus: Math.round(order.price / 10) //點數機制:消費/10
-      }
-    })
+      map(order => {
+        return {
+          theaterName: order.sessionId.theaterId.name, //影城名稱
+          orderNumber: order.orderId, //訂單編號
+          orderDate: order.orderDatetime, //訂單時間
+          bonus: Math.round(order.price / 10) //點數機制:消費/10
+        }
+      })
     const endDateOfThisYear = new Date(new Date().getFullYear(), 11, 31)
     const endDateOfNextYear = new Date(new Date().getFullYear() + 1, 11, 31)
 
