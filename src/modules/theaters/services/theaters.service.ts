@@ -48,7 +48,7 @@ export class TheatersService {
         phone: t.phone,
         imgUrl: t.img,
         mapUrl: t.mapUrl,
-        rooms: t.rooms.map(r=>{return {_id: r._id}}),
+        rooms: t.rooms,
         description: t.description,
         traffic: t.traffic,
         ticketPriceInfo: Object.keys(ticketInfos).map((key) => {
