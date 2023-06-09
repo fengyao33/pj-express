@@ -15,4 +15,6 @@ export const updatePasswordValidators = [
   check('password').notEmpty().withMessage('password不可為空'),
   check('passwordCheck').notEmpty().withMessage('passwordCheck不可為空')
 ];
-export const updateProfileValidators = [];
+export const forgetPasswordValidators = [
+  check('email').notEmpty().withMessage('email不可為空')
+];

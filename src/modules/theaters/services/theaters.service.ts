@@ -42,12 +42,13 @@ export class TheatersService {
       const ticketInfos = getTicketInfos(t.rooms);
 
       return {
+        _id:t.id,
         name: t.name,
         address: t.address,
         phone: t.phone,
         imgUrl: t.img,
         mapUrl: t.mapUrl,
-        rooms: t.rooms.length,
+        rooms: t.rooms,
         description: t.description,
         traffic: t.traffic,
         ticketPriceInfo: Object.keys(ticketInfos).map((key) => {
