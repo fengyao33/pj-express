@@ -1,28 +1,15 @@
 import { NextFunction, Request, Response } from 'express'
 import { SessionsService } from './services'
-import jwt from 'jsonwebtoken';
 import { ErrorHandler, handleErrorMiddleware } from '@middlewares/error_handler';
 import successHandler from '@middlewares/success_handler';
-import { settings } from '@config/settings'
+import moment from 'moment'
+import { Types } from 'mongoose';
 
-
-/**
- * Return all entities
- * @param req
- * @param res
- * @param next
- */
 export async function index(req: Request, res: Response, next: NextFunction): Promise<void> {
   const finder = new SessionsService()
   successHandler(res, await finder.findAll())
 }
 
-/**
- * Return ticketTypes from the Specified session
- * @param req
- * @param res
- * @param next
- */
 export async function getTicketTypes(req: Request, res: Response, next: NextFunction): Promise<void> {
   const finder = new SessionsService()
   const result = await finder.findTicketTypesById(req.params.id);
@@ -30,12 +17,6 @@ export async function getTicketTypes(req: Request, res: Response, next: NextFunc
   else successHandler(res, result)
 }
 
-/**
- * Return relative info from the Specified session
- * @param req
- * @param res
- * @param next
- */
 export async function getInfo(req: Request, res: Response, next: NextFunction): Promise<void> {
   const finder = new SessionsService()
   const result = await finder.getSessionInfoById(req.params.id);
@@ -43,12 +24,6 @@ export async function getInfo(req: Request, res: Response, next: NextFunction): 
   else successHandler(res, result)
 }
 
-/**
- * Return seatsInfo from the Specified session
- * @param req
- * @param res
- * @param next
- */
 export async function getRoomInfo(req: Request, res: Response, next: NextFunction): Promise<void> {
   const finder = new SessionsService()
   const result = await finder.findRoomInfoBySessionId(req.params.id);
@@ -56,15 +31,49 @@ export async function getRoomInfo(req: Request, res: Response, next: NextFunctio
   else successHandler(res, result)
 }
 
-/**
- * Return seatsInfo from the Specified session
- * @param req
- * @param res
- * @param next
- */
 export async function checkSeatsInfo(req: Request, res: Response, next: NextFunction): Promise<void> {
   const finder = new SessionsService()
   const result = await finder.checkSeatsStatusBySessionId(req.params.id, req.body?.seats);
   if (result instanceof ErrorHandler)handleErrorMiddleware(result,req,res,next)
   else successHandler(res, result)
+}
+
+export async function getSessionList(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const finder = new SessionsService()
+
+  let { cinemaId, roomId, startDate, endDate} = req.query
+  const pattern = /^\d{4}-\d{2}-\d{2}$/
+
+  if (!pattern.test(startDate as string)) {
+    res.json({
+      status: "false",
+      messege: '時間格式錯誤'
+    })
+  } 
+
+  let sd = moment.utc(startDate as moment.MomentInput, 'YYYY-MM-DD').utcOffset(480).toDate()
+  let ed = moment.utc(endDate as moment.MomentInput, 'YYYY-MM-DD').utcOffset(480).toDate()
+
+  let query = {
+    sd,
+    ed,
+    theaterId: cinemaId,
+    roomInfo: roomId
+  }
+
+  const result = await finder.getSesstionsList(query);
+
+  res.json({
+    data: result
+  })
+
+}
+
+export async function postUpdateSession(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const session = new SessionsService()
+  let result = session.postSesstionsList(req.body)
+  res.json({
+    data: result
+  })
+
 }

@@ -9,15 +9,15 @@ const router = Router();
 router.use(isAuth);
 
 router.get('/', Controller.index);
-//
+
 router.get('/:id', Controller.show);
-//
+
 router.post('/', [...storeValidators, validateBody], Controller.store);
-//
+
 router.patch('/:id', [...updateValidators, validateBody], Controller.update);
-//
+
 router.delete('/:id', Controller.destroy);
-//
+
 router.post('/file/upload', fileValidate, Controller.fileUpload)
 
 export default router;
