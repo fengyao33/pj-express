@@ -176,6 +176,7 @@ export class SessionsService {
       let movieQy = {
         inTheatersTime: { 
           $gt: new Date(sd),
+          $lt: new Date(ed)
         },
         outOfTheatersTime: {
           $lt: new Date(ed),
