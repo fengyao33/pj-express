@@ -139,7 +139,8 @@ export class SessionsService {
                     '$$m',
                     {
                       datetime: '$datetime',
-                      sesstionId: '$_id'
+                      sesstionId: '$_id',
+                      startTime: '$startTime'
                     }
                   ]
                 }
@@ -161,7 +162,8 @@ export class SessionsService {
               movieCName: 1,
               movieEName: 1,
               datetime: 1,
-              sesstionId: 1
+              sesstionId: 1,
+              startTime: 1
             },
             _id: 0
           }
@@ -179,7 +181,28 @@ export class SessionsService {
           $lt: new Date(ed)
         }
       }
-      let movieList = await Movies.find(movieQy) 
+      let movies = await Movies.find(
+        movieQy,
+        {
+          movieTime: 1,
+          imgUrl: 1,
+          id: 1,
+          movieCName: 1
+        }
+      ) 
+        let movieboxs = await Movies.find(
+          { style: 'box' },
+          { 
+            movieCName: 1,
+            // id: 1,
+            movieTime: 1,
+          }
+        ) 
+      const movieList = [
+        ...movies,
+        ...movieboxs
+      ]
+
       
       return { movieList, sessionData}
   }
