@@ -174,11 +174,11 @@ export class SessionsService {
       const sessionData = _.flatMap(result, 'movie')
 
       let movieQy = {
-        inTheatersTime: {
-          $gt: new Date(sd)
+        inTheatersTime: { 
+          $gt: new Date(sd),
         },
         outOfTheatersTime: {
-          $lt: new Date(ed)
+          $lt: new Date(ed),
         }
       }
       let movies = await Movies.find(
@@ -187,7 +187,7 @@ export class SessionsService {
           movieTime: 1,
           imgUrl: 1,
           id: 1,
-          movieCName: 1
+          movieCName: 1,
         }
       ) 
         let movieboxs = await Movies.find(
