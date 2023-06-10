@@ -1,5 +1,9 @@
 import { ErrorHandler } from "@middlewares/error_handler"
 import Session, { ISession } from "@models/sessions.model"
+import Theaters from "@models/theaters.model"
+import Movies from "@models/movies.model"
+import { ObjectId } from 'mongodb'
+import _ from 'lodash'
 
 export class SessionsService {
   async findTicketTypesById(id): Promise<ErrorHandler | Object[]> {
@@ -102,5 +106,91 @@ export class SessionsService {
       available:seatsQ.filter(s=>s.situation=="可販售"&&!s.isSold),
       unAvailable:seatsQ.filter(s=>s.situation!="可販售"||s.isSold)
     }
+  }
+
+  async getSesstionsList({sd, ed, theaterId, roomInfo}: any): Promise<Object> {
+      let $match = {
+        theaterId: new ObjectId(theaterId),
+        roomInfo: new ObjectId(roomInfo),
+        datetime: {
+          $gt: new Date(sd),
+          $lt: new Date(ed)
+        }
+      };
+      
+      const getSessionQy = [
+        { $match },
+        {
+          $lookup: {
+            from: 'movies',
+            localField: 'movieId',
+            foreignField: '_id', 
+            as: 'movie' 
+          }
+        },
+        {
+          $addFields: {
+            movie: {
+              $map: {
+                input: '$movie',
+                as: 'm',
+                in: {
+                  $mergeObjects: [
+                    '$$m',
+                    {
+                      datetime: '$datetime',
+                      sesstionId: '$_id'
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          $project: {
+            movie: 1,
+            _id: 0
+          }
+        },
+        {
+          $project: {
+            movie: {
+              imgUrl: 1,
+              movieTime: 1,
+              movieCName: 1,
+              movieEName: 1,
+              datetime: 1,
+              sesstionId: 1
+            },
+            _id: 0
+          }
+        },
+      ];
+
+      let result = await Session.aggregate(getSessionQy)
+      const sessionData = _.flatMap(result, 'movie')
+
+      let movieQy = {
+        inTheatersTime: {
+          $gt: new Date(sd)
+        },
+        outOfTheatersTime: {
+          $lt: new Date(ed)
+        }
+      }
+      let movieList = await Movies.find(movieQy) 
+      
+      return { movieList, sessionData}
+  }
+
+  async postSesstionsList(body): Promise<Object> {
+    const { movieId, roomInfo, theaterId, datetime } = body
+
+    let theater = await Theaters.findOne(theaterId)
+
+    console.log(theater)
+
+    return {}
   }
 }

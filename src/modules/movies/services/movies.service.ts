@@ -2,7 +2,6 @@ import Movies from '@models/movies.model'
 import on from "await-handler";
 import getTableParams from "@utils/getTableParams";
 // import Session, { ISession } from "@models/sessions.model"
-import TimeSesstions from "@models/timeSesstions.model"
 import _ from 'lodash'
 import Session from '@models/sessions.model';
 import { ObjectId } from 'mongoose';
