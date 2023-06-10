@@ -194,7 +194,6 @@ export class SessionsService {
           { style: 'box' },
           { 
             movieCName: 1,
-            // id: 1,
             movieTime: 1,
           }
         ) 
