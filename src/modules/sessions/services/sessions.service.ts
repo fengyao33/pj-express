@@ -171,7 +171,37 @@ export class SessionsService {
       ];
 
       let result = await Session.aggregate(getSessionQy)
-      const sessionData = _.flatMap(result, 'movie')
+      // const sessionData = _.flatMap(result, 'movie')
+      let temp = _.flatMap(result, 'movie')
+
+      let dataArr = _.groupBy(temp, (item) => {
+        const date = new Date(item.datetime)
+        const year = date.getFullYear()
+        const month = date.getMonth() + 1
+        const day = date.getDate()
+      
+        const dateString = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
+      
+        return dateString;
+      })
+
+      const numDays = 7
+      let dateObj = {} 
+      for (let i = 0; i < numDays; i++) {
+        const currentDate = new Date(sd);
+        currentDate.setDate(sd.getDate() + i);
+        const dateString = currentDate.toISOString().split('T')[0];
+        dateObj[dateString] = [];
+      }
+
+      for (const date in dateObj) {
+        if (dataArr.hasOwnProperty(date)) {
+          dateObj[date] = dataArr[date];
+        }
+      }
+
+      const sessionData = dateObj
+    
 
       let movieQy = {
         inTheatersTime: { 
@@ -217,3 +247,33 @@ export class SessionsService {
     return {}
   }
 }
+
+
+
+
+// "sessionData": {
+//   "2023-06-08T00:00:00.000Z": [
+//     {
+//       "movieId": "646f7309f1be05938a9823ff",
+//       "roomInfo": "646f7309f1be05938a9823ff",
+//       "theaterId": "646f7309f1be05938a9823ff"
+//       "datetime": "2023-06-08T10:21:22.164Z",
+//       "sesstionId": "646e3d7ebfff22bfa29c06f2",   //可以沒有
+//       "startTime": 0
+//   },
+//   ]
+//   "2023-06-09T00:00:00.000Z": []
+//   "2023-06-10T00:00:00.000Z": []
+//   "2023-06-11T00:00:00.000Z": [  {
+//       "movieId": "646f7309f1be05938a9823ff",
+//       "roomInfo": "646f7309f1be05938a9823ff",
+//       "theaterId": "646f7309f1be05938a9823ff"
+//       "datetime": "2023-06-08T10:21:22.164Z",
+//       "sesstionId": "646e3d7ebfff22bfa29c06f2",   //可以沒有
+//       "startTime": 0
+//   },
+// ]
+//   "2023-06-12T00:00:00.000Z": []
+//   "2023-06-13T00:00:00.000Z": []
+
+// }
