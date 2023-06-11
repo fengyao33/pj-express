@@ -44,7 +44,7 @@ export async function getSessionList(req: Request, res: Response, next: NextFunc
   let { cinemaId, roomId, startDate, endDate} = req.query
   const pattern = /^\d{4}-\d{2}-\d{2}$/
 
-  if (!pattern.test(startDate as string)) {
+  if (!pattern.test(startDate as string) || !pattern.test(endDate as string)) {
     res.json({
       status: "false",
       messege: '時間格式錯誤'
