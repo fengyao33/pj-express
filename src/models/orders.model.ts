@@ -7,7 +7,7 @@ export interface IOrder {
   price: number,
   orderId: string,
   payMethod: string,
-  orderDatetime: string,
+  orderDatetime: Date,
   status: string,
   sessionId: Schema.Types.ObjectId
 }
@@ -31,7 +31,7 @@ const orderSchema = new Schema<IOrder>({
     required: [true, "請輸入付款方式欄位:payMethod"],
   },
   orderDatetime: {
-    type: String,
+    type: Date,
     required: [true, "請輸入訂單時間欄位:orderDatetime"],
   },
   status: {
