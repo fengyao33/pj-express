@@ -2,12 +2,6 @@ import { NextFunction, Request, Response } from 'express'
 import { StatisticsService } from './services'
 import moment from 'moment'
 
-/**
- * Return all entities
- * @param req
- * @param res
- * @param next
- */
 export async function showReport(req: Request, res: Response, next: NextFunction): Promise<void> {
   const finder = new StatisticsService()
 
@@ -36,45 +30,12 @@ export async function showReport(req: Request, res: Response, next: NextFunction
 
 }
 
-/**
- * Return one instance of entity
- * @param req
- * @param res
- * @param next
- */
-export async function show(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const { id } = req.params
+export async function showOrder(req: Request, res: Response, next: NextFunction): Promise<void> {
   const finder = new StatisticsService()
-}
+  let result = await finder.getOrderInfo()
 
-/**
- * Save an entity
- * @param req
- * @param res
- * @param next
- */
-export async function store(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const saver = new StatisticsService()
-}
-
-/**
- * Update an entity
- * @param req
- * @param res
- * @param next
- */
-export async function update(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const { id } = req.params
-  const updater = new StatisticsService()
-}
-
-/**
- * Destroy one instance of an entity
- * @param req
- * @param res
- * @param next
- */
-export async function destroy(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const { id } = req.params
-  const destroyer = new StatisticsService()
+  res.json({
+    messege: 'success',
+    data: result
+  })
 }

@@ -44,7 +44,19 @@ const orderSchema = new Schema<IOrder>({
     required: [true, "請輸入場次id欄位:sessionId"],
     ref: Session.modelName
   }
+},
+{
+  versionKey: false,
+  toJSON: { virtuals: true},
+  toObject: {virtuals: true},
 });
+
+orderSchema.virtual('users',{
+  ref: 'users',
+  foreignField: 'orderId',
+  localField: '_id',
+  justOne: false,
+})
 
 const Order = model<IOrder>("orders", orderSchema);
 

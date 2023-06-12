@@ -6,7 +6,7 @@ const router = Router()
 
 router.get('/branch', Controller.showReport)
 // //
-// router.get('/:id', Controller.show)
+router.get('/Order', Controller.showOrder)
 // //
 // router.post('/', storeValidators, Controller.store)
 // //
