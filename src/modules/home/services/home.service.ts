@@ -35,7 +35,7 @@ export class HomeService {
       {
         $match: {
           $expr: {
-            $gt: [today, "$inTheatersTime"]
+            $lt: [today, "$inTheatersTime"]
           }
         }
       },
@@ -58,8 +58,8 @@ export class HomeService {
         $match: {
           $expr: {
             $and: [
-              { $gt: [today, "$inTheatersTime"] }, 
-              { $gt: [today, "$outOfTheatersTime"] }
+              { $lt: [today, "$inTheatersTime"] }, 
+              { $lt: [today, "$outOfTheatersTime"] }
             ]
           }
         }
@@ -70,7 +70,8 @@ export class HomeService {
     const focusMovie = await Movies.aggregate<IMovies<string>>([
       {
         $project: {
-        movieUrl: 1,
+        id: 1,
+        videoUrl: 1,
         movieCName: 1,
         synopsis: 1  
         }
@@ -85,7 +86,7 @@ export class HomeService {
           }
         }
       },
-      { $limit: 10 }
+      { $limit: 1 }
     ])  
 
     const banner  = await Movies.aggregate<IMovies<string>>([
@@ -111,7 +112,7 @@ export class HomeService {
       { $limit: 10 }
     ])  
 
-    let data = { activity, currentMovieList, futureMovieList, banner, focusMovie }
+    let data = { activity, currentMovieList, futureMovieList, banner, focusMovie:focusMovie[0] }
 
 
     return data

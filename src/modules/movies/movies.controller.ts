@@ -13,13 +13,26 @@ export async function index(
   let skip
 
   if (id) {
-    let result = await finder.findOne(id as string, sdate as string, edate as string)
+
+    let resultArr: object[] = []
+    let result
+
+    let getday = new Date()
+
+    console.log(getday)
+    // let result = await finder.findOne(id as string, sdate as string, edate as string, getday as Date)
+    for (let i = 0; i < 7; i++) {
+      result = await finder.findOne(id as string, sdate as string, edate as string, getday as Date);
+      getday.setDate(getday.getDate() + 1)
+
+      resultArr.push(result)
+    }
 
     
 
     res.json({
       status: "success",
-      data: result,
+      data: resultArr,
   
     })
   } else {
@@ -27,7 +40,8 @@ export async function index(
       skip = (parseInt(pageNo as string) - 1) * parseInt(pageSize as string)
 
     }
-     let [ result, tableParams ] = await finder.findAll(skip, pageSize, isCurrent, pageNo)
+    let [ result, tableParams ] = await finder.findAll(skip, pageSize, isCurrent, pageNo)
+    
 
 
     res.json({

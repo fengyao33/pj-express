@@ -89,7 +89,7 @@ export async function postMember(
   try {
     //建立帳號email、密碼是必填存在
     const body = req.body;
-    const { name, email, sex, birth, mobile, hobby, password } = body;
+    const { name, email, sex, birth, mobile, hobby, password, roles } = body;
     checkRequireField({
       checkArr: ["email", "password"],
       obj: body,
@@ -99,7 +99,7 @@ export async function postMember(
     }
     const hashPassword: string = await bcrypt.hash(password, 12);
     const newProfile = _.omitBy(
-      { email, name, sex, birth, mobile, hobby },
+      { email, name, sex, birth, mobile, hobby, roles },
       _.isEmpty
     );
     const result = await User.create({
@@ -127,13 +127,13 @@ export async function updateMember(
     //更新email不可為空
     const { id } = req.params;
     const body = req.body;
-    const { name, email, sex, birth, mobile, hobby } = body;
+    const { name, email, sex, birth, mobile, hobby, roles } = body;
     checkRequireField({
       checkArr: ["email"],
       obj: body,
     });
     const newProfile = _.omitBy(
-      { name, email, sex, birth, mobile, hobby },
+      { name, email, sex, birth, mobile, hobby, roles },
       _.isEmpty
     );
     if (_.isEmpty(newProfile)) throw new Error("沒有需要更新的資料");

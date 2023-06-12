@@ -1,7 +1,7 @@
-import Order from "@models/orders.model";
+import Order, { IOrder } from "@models/orders.model";
 import { v4 as uuid4 } from "uuid";
-import jwt from "jsonwebtoken";
-import Session from "@models/sessions.model";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import Session, { ISession } from "@models/sessions.model";
 import TicketType from "@models/ticketTypes.model";
 import { ErrorHandler } from "@middlewares/error_handler";
 import User from "@models/user.model";
@@ -121,27 +121,62 @@ function getDataTime() {
   return isoString
 }
 
-function getEcpatDateTime(IsoStr) {
+function getEcpayDateTime(IsoStr) {
   const date = new Date(IsoStr);
-  const formattedDateString = date.toLocaleString('en-US', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-    timeZone: 'UTC'
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  
+  const formattedDateTime = `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+  return formattedDateTime;
+}
+
+function hasDuplicateData(arr) {
+  const seen = new Set();
+  for (const obj of arr) {
+    const key = obj.col + "-" + obj.row;
+    if (seen.has(key)) {
+      return true; // 有重複資料
+    }
+    seen.add(key);
+  }
+  return false; // 沒有重複資料
+}
+
+async function seatsUpdate(sessionId: string, selectedSeats: { row: number, col: number }[], newData: object) {
+
+  const searchSeats = selectedSeats.map((seat, i) => {
+    return { [`elem${i}.col`]: seat.col, [`elem${i}.row`]: seat.row };
+  })
+  const updateObj = {};
+  selectedSeats.forEach((rc, i) => {
+    Object.keys(newData).forEach(key => {
+      updateObj[`seats.$[elem${i}].${key}`] = newData[key];
+    })
   });
-  return formattedDateString
+
+  const resultSessionSeatUpdate = await Session.updateOne(
+    { _id: sessionId },
+    { $set: updateObj },
+    { arrayFilters: searchSeats }
+  )
 }
 
 export class BookingService {
   async checkData(data: any): Promise<Object> {
+    //判斷有無重複座位資料
+    if (hasDuplicateData(data.seats)) return new ErrorHandler(400, "座位重複選擇")
     //判斷有無此場次
-    const selectedSession = await Session.findById(data.sessionId)
-
-    if (selectedSession == undefined) return new ErrorHandler(400, "沒有此場次")
+    let selectedSession
+    try {
+      selectedSession = await Session.findById(data.sessionId)
+    } catch {
+      return new ErrorHandler(400, "沒有此場次")
+    }
+    if (selectedSession == null) return new ErrorHandler(400, "沒有此場次")
     //判斷選取票種是否有在該場次內
     for (let i = 0; i < data.ticketTypeIds.length; i++) {
       let isExisted;
@@ -154,31 +189,40 @@ export class BookingService {
       if (!isExisted) return new ErrorHandler(400, `該場次沒有此票種id:${data.ticketTypeIds[i]}`);
     }
     //判斷選取票種的座位與總金額是否正確
-    let totalPrice = 0
+    let totalPrice = 0, totalSeats = 0
     const selectedTicketTypesDB = await TicketType.find({ _id: { $in: data.ticketTypeIds } })
     const selectedTicketTypes = data.ticketTypeIds.map(
       id => selectedTicketTypesDB.find(t => t.id.toString() == id)
     )
     selectedTicketTypes.forEach(selectedTicketType => {
       totalPrice += selectedTicketType.price
+      totalSeats += selectedTicketType.ticketCount
     })
     if (data.price != totalPrice) return new ErrorHandler(400, "價錢與選擇票種不符")
+    if (data.seats.length != totalSeats) return new ErrorHandler(400, "座位數量選擇錯誤")
     //讀出場次影廳的座位,確認是否有該座位,確認座位是否被選取
-    const selectedSeats = selectedSession.seats.filter(seat => {
-      return data.seats.some(c => c.row == seat.row && c.col == seat.col)
+    const selectedSeatsFormDB = selectedSession.seats.filter(seat => {
+      return data.seats.some(obj => obj.col === seat.col && obj.row === seat.row)
     })
-    if (data.seats.length != selectedSeats.length) return new ErrorHandler(400, `座位選擇數量錯誤:選擇數量=${data.seats.length},票種合計數量=${selectedSeats.length}`)
-    selectedSeats.forEach(seat => {
-      if (seat.situation != "可販售") return new ErrorHandler(400, `部分座位row=${seat.row},col=${seat.col}已被選取`)
-    })
+    for (const seat of selectedSeatsFormDB) {
+      if (seat.isSold) return new ErrorHandler(400, `座位col:${seat.col},row:${seat.row} 已售出`)
+      if (seat.situation != "可販售") return new ErrorHandler(400, `座位col:${seat.col},row:${seat.row} ${seat.situation}`)
+    }
+
     return ""
   }
 
   async hashData(authToken: any, data: any): Promise<Object> {
     //get user email from JWT
-    const decode = await jwt.verify(authToken, process.env.JWT_SECRET, { complete: false });
+    const decode = jwt.verify(authToken, process.env.JWT_SECRET!, { complete: false }) as JwtPayload
     //get selected TicketTypes
     const selectedTicketTypes = await TicketType.find({ _id: { $in: data.ticketTypeIds } })
+
+    await seatsUpdate(data.sessionId, data.seats, { situation: '保留位' })
+    const timerId = setInterval(() => {
+      seatsUpdate(data.sessionId, data.seats, { situation: '可販售' })
+      clearInterval(timerId);
+    }, settings.SEAT_LOCK_SECONDS)
 
     const add = {
       ticketTypeName: data.ticketTypeIds.map(tid => selectedTicketTypes.find(t => t._id.toString() == tid)?.name),//["雙人吉拿套票","全票"],//前端給
@@ -193,12 +237,13 @@ export class BookingService {
 
     const createResult: any = await Order.create(add)
 
+    //update orderId in user collection
     await User.findOneAndUpdate({ email: decode.email.toLowerCase() }, { $addToSet: { orderId: createResult._id } })
 
     const payData: any = {
       MerchantID: '3002607',
       MerchantTradeNo: createResult.orderId,
-      MerchantTradeDate: getEcpatDateTime(createResult.orderDatetime),
+      MerchantTradeDate: getEcpayDateTime(createResult.orderDatetime),
       PaymentType: 'aio',
       TotalAmount: createResult.price.toString(),
       TradeDesc: '我是商品描述',
@@ -218,17 +263,6 @@ export class BookingService {
     //#region 變更座位變更為已販售
     const order = await Order.findOne({ orderId: body.MerchantTradeNo })
     if (order == null) return new ErrorHandler(400, "沒有此訂單編號")
-    const searchSeats = order?.seats.map((seat, i) => {
-      const [colStr, rowStr] = seat.split("排");
-      const col = Number(colStr);
-      const row = Number(rowStr);
-      return { [`elem${i}.col`]: col, [`elem${i}.row`]: row };
-    })
-    const newStatus = true;
-    const updateObj = {};
-    order?.seats.forEach((rc, i) => {
-      updateObj[`seats.$[elem${i}].isSold`] = newStatus;
-    });
 
     let selectedSession
     try {
@@ -257,11 +291,12 @@ export class BookingService {
       })
       return new ErrorHandler(400, errMsg)
     }
-    const resultSessionSeatUpdate = await Session.updateOne(
-      { _id: order?.sessionId },
-      { $set: updateObj },
-      { arrayFilters: searchSeats }
-    )
+    await seatsUpdate(order?.sessionId.toString(), order?.seats.map(seat => {
+      const [colStr, rowStr] = seat.split("排");
+      const col = Number(colStr);
+      const row = Number(rowStr);
+      return { row, col };
+    }), { isSold: true })
     //#endregion
 
     //訂票紀錄狀態變更為未取票
@@ -273,12 +308,12 @@ export class BookingService {
   async reHashData(orderId: any): Promise<Object> {
     const order: any = await Order.findOne({ orderId })
     if (order == undefined) return new ErrorHandler(400, "沒有此訂單編號")
-    if (order.status!='未付款') return new ErrorHandler(400, "此訂單已付款完成")
+    if (order.status != '未付款') return new ErrorHandler(400, "此訂單已付款完成")
 
     const payData: any = {
       MerchantID: '3002607',
       MerchantTradeNo: order.orderId,
-      MerchantTradeDate: getEcpatDateTime(order.orderDatetime),
+      MerchantTradeDate: getEcpayDateTime(order.orderDatetime),
       PaymentType: 'aio',
       TotalAmount: order.price.toString(),
       TradeDesc: '我是商品描述',

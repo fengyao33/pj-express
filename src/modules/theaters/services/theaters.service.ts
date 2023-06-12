@@ -1,7 +1,8 @@
 import { ErrorHandler } from '@middlewares/error_handler';
 import { IRoom } from '@models/rooms.model';
 import Theater from '@models/theaters.model';
-import TicketType from '@models/ticketTypes.model';
+import Movies from '@models/movies.model';
+import Sessions from '@models/sessions.model';
 
 function getTicketInfos(rs: IRoom[]) {
   const ticketInfos = {};
@@ -25,17 +26,29 @@ function getTicketInfos(rs: IRoom[]) {
 export class TheatersService {
   async findAll(): Promise<Object[]> {
     const theaters = await Theater.find().populate({ path: 'rooms.ticketTypeIds' });
-
-    return theaters.map((t) => {
+    
+    return theaters.sort((tA,tB)=>{
+      const areaNumA = tA.phone.split('-')[0]
+      const areaNumB = tB.phone.split('-')[0]
+      if (areaNumA < areaNumB) {
+        return -1;
+      }
+      if (areaNumA > areaNumB) {
+        return 1;
+      }
+      return 0;
+    })
+    .map((t) => {
       const ticketInfos = getTicketInfos(t.rooms);
 
       return {
+        _id:t.id,
         name: t.name,
         address: t.address,
         phone: t.phone,
         imgUrl: t.img,
         mapUrl: t.mapUrl,
-        rooms: t.rooms.length,
+        rooms: t.rooms,
         description: t.description,
         traffic: t.traffic,
         ticketPriceInfo: Object.keys(ticketInfos).map((key) => {
@@ -77,4 +90,12 @@ export class TheatersService {
       }),
     };
   }
+
+  async getOneTheater(id: string) {
+    return await Theater.findOne({_id:id})
+  }
 }
+
+
+
+

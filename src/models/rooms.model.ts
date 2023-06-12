@@ -7,7 +7,7 @@ export interface IRoom extends Document {
   enable: boolean,
   seats: ISeat[],
   ticketTypeIds: Schema.Types.ObjectId[],
-  type: string
+  type: string,
 }
 
 export const roomSchema = new Schema<IRoom>({
@@ -28,7 +28,18 @@ export const roomSchema = new Schema<IRoom>({
   type: {
     type: String,
     required: [true, '類型名稱不可為空']
-  }
+  },
+},
+{
+  versionKey: false,
+  toJSON: { virtuals: true},
+  toObject: {virtuals: true},
 });
+
+roomSchema.virtual('session',{
+  ref: 'sessions',
+  foreignField: 'theaterId',
+  localField: '_id'
+})
 
 export const Room = model<IRoom>("rooms", roomSchema);
