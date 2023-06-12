@@ -1,5 +1,4 @@
 import Orders from "@models/orders.model"
-import { test } from "node:test"
 
 export class StatisticsService {
   async getAllBranchReport({sd, ed}: {sd: Date, ed: Date}): Promise<any> {
@@ -70,23 +69,46 @@ export class StatisticsService {
     return branchRevenue
   }
 
-  async findAll(): Promise<Object[]> {
-    return []
-  }
+  async getOrderInfo(): Promise<any> {
+    // let result = await Orders.find()
+    // .populate({
+    //   path: 'users',
+    //   select: 'email'
+    // })
+    // .populate('sessionId')
 
-  async update(id: any, body: any): Promise<Object> {
-    return {}
-  }
-
-  async store(body: any): Promise<Object> {
-    return {}
-  }
-
-  async destroy(id: any): Promise<Object> {
-    return {}
-  }
-
-  async delete(id: any): Promise<Object> {
-    return {}
+      let result = await Orders.aggregate([
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'users',
+            foreignField: 'id', 
+            as: 'users',
+          },
+        },
+        {
+          $addFields: {
+            user: { $arrayElemAt: ['$users.email', 0] },
+          },
+        },
+        {
+          $project: {
+            ticketTypeName: 1,
+            seats: 1,
+            price: 1,
+            orderId: 1,
+            payMethod: 1,
+            orderDatetime: 1,
+            status: 1,
+            sessionId: 1,
+            id: 1,
+            user: 1,
+          },
+        },
+    ]
+    )
+    
+    
+    return result
   }
 }

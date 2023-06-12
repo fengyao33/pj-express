@@ -32,19 +32,6 @@ const theaterSchema = new Schema<ITheater>({
     type: Boolean,
     default: true,
   },
-  // timeInfo: {
-  //   type: [Schema.Types.ObjectId],
-  //   ref: 'Room'
-  // },
-  // showingOf: {
-  //   type: Schema.Types.ObjectId,
-  //   ref: 'timesessions',
-  // },
-  // sessionId: {
-  //   type: Schema.Types.ObjectId,
-  //   ref: 'sessions',
-  // }
-
 });
 
 const Theater = model<ITheater>('theaters', theaterSchema);
