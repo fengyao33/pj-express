@@ -9,6 +9,6 @@ const router = Router()
 //取得
 router.get('/list', [...sessionsList, validateBody], Controller.getSessionList)
 //修改
-router.post('/list', [...addSessions, validateBody], Controller.postUpdateSession)
+router.post('/list', Controller.postUpdateSession)
 
 export default router
