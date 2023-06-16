@@ -58,30 +58,36 @@ export class UserauthService {
   async getPurchaseRecord(authToken, page, limit): Promise<Object> {
     //get user email from JWT
     const decode = await jwt.verify(authToken, process.env.JWT_SECRET!, { complete: false }) as JwtPayload
-    const user: any = await User.findOne({ email: decode.email.toLowerCase() }).populate({
+    let user: any
+    user = await User.findOne({ email: decode.email.toLowerCase() }).populate({
       path: "orderId", options: {
         sort: { orderDatetime: -1 },
         skip: page, limit: limit,
         populate: { path: "sessionId", options: { populate: [{ path: "theaterId" }, { path: "movieId" }, { path: "ticketTypeIds" }] } }
       }
     })
+
     if (user == undefined) return new ErrorHandler(400, '沒有此User')
-    return user.orderId.map(order => {
-      return {
-        movieName: order.sessionId.movieId.movieCName,//電影名稱
-        movieNameEng: order.sessionId.movieId.movieEName,//電影英文名稱
-        theaterName: order.sessionId.theaterId.name,//影城名稱
-        movieDatetime: order.sessionId.datetime,//開演時間
-        ticketType: order.ticketTypeName,//票別
-        seats: order.seats,//座位s
-        price: order.price,//金額
-        orderId: order.orderId,//訂單編號,barcode產生
-        payMethod: order.payMethod,//付款方式
-        orderDatetime: order.orderDatetime,//訂單時間
-        status: order.status,//未取票,已取票,已退票,未付款
-        movieImgUrl: order.sessionId.movieId.imgUrl//電影海報url
-      }
-    })
+    try {
+      return user.orderId.map(order => {
+        checkOrderData(order)
+        return {
+          movieName: order.sessionId.movieId.movieCName,//電影名稱
+          movieNameEng: order.sessionId.movieId.movieEName,//電影英文名稱
+          theaterName: order.sessionId.theaterId.name,//影城名稱
+          movieDatetime: order.sessionId.datetime,//開演時間
+          ticketType: order.ticketTypeName,//票別
+          seats: order.seats,//座位s
+          price: order.price,//金額
+          orderId: order.orderId,//訂單編號,barcode產生
+          payMethod: order.payMethod,//付款方式
+          orderDatetime: order.orderDatetime,//訂單時間
+          status: order.status,//未取票,已取票,已退票,未付款
+          movieImgUrl: order.sessionId.movieId.imgUrl//電影海報url
+        }
+      })
+    }
+    catch (e: any) { return e }
   }
 
   async getBonusRecord(authToken, page, limit): Promise<Object> {
@@ -94,15 +100,20 @@ export class UserauthService {
       }
     })
     if (user == undefined) return new ErrorHandler(400, '沒有此User')
-    const returnOrders = user.orderId.filter(order => order.status == "未取票" || order.status == "已取票").
-      map(order => {
-        return {
-          theaterName: order.sessionId.theaterId.name, //影城名稱
-          orderNumber: order.orderId, //訂單編號
-          orderDate: order.orderDatetime, //訂單時間
-          bonus: Math.round(order.price / 10) //點數機制:消費/10
-        }
-      })
+    let returnOrders
+    try {
+      returnOrders = user.orderId.filter(order => order.status == "未取票" || order.status == "已取票").
+        map(order => {
+          checkOrderData(order)
+          return {
+            theaterName: order.sessionId.theaterId.name, //影城名稱
+            orderNumber: order.orderId, //訂單編號
+            orderDate: order.orderDatetime, //訂單時間
+            bonus: Math.round(order.price / 10) //點數機制:消費/10
+          }
+        })
+    }
+    catch (e: any) { return new ErrorHandler(400, e.message) }
     const endDateOfThisYear = new Date(new Date().getFullYear(), 11, 31)
     const endDateOfNextYear = new Date(new Date().getFullYear() + 1, 11, 31)
 
@@ -115,6 +126,12 @@ export class UserauthService {
       }
     };
   }
+}
+function checkOrderData(order) {
+  if (order == undefined) throw new ErrorHandler(400, '資料庫資料錯誤! 找不到user的order資料')
+  else if (order.sessionId == undefined) throw new ErrorHandler(400, '資料庫資料錯誤! 找不到user的order的session資料')
+  else if (order.sessionId.movieId == undefined) throw new ErrorHandler(400, '資料庫資料錯誤! 找不到user的order的session的movieId資料')
+  else if (order.sessionId.theaterId == undefined) throw new ErrorHandler(400, '資料庫資料錯誤! 找不到user的order的session的theaterId資料')
 }
 
 function toDate(datetime) {
