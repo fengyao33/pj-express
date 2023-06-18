@@ -4,6 +4,7 @@ import Theaters from "@models/theaters.model"
 import Movies from "@models/movies.model"
 import { ObjectId } from 'mongodb'
 import _ from 'lodash'
+import { Console } from "console"
 
 export class SessionsService {
   async findTicketTypesById(id): Promise<ErrorHandler | Object[]> {
@@ -209,9 +210,10 @@ export class SessionsService {
           $lt: new Date(ed)
         },
         outOfTheatersTime: {
-          $lt: new Date(ed),
+          $gt: new Date(ed)
         }
       }
+
       let movies = await Movies.find(
         movieQy,
         {
@@ -221,6 +223,7 @@ export class SessionsService {
           movieCName: 1,
         }
       ) 
+
         let movieboxs = await Movies.find(
           { style: 'box' },
           { 
@@ -237,13 +240,42 @@ export class SessionsService {
       return { movieList, sessionData}
   }
 
-  async postSesstionsList(body): Promise<Object> {
-    const { movieId, roomInfo, theaterId, datetime } = body
+  async postSesstionsList(update): Promise<any> {
+  
+  const result = _.flatMap(update, (values) => {
+    return _.map(values, (obj) => {
+      return _.omit(obj, ['movieTime', 'imgUrl', 'movieCName']);
+    });
+  });
 
-    let theater = await Theaters.findOne(theaterId)
+  _.map(result, async obj => {
 
-    console.log(theater)
+    if (obj.sessionId !== '') { 
 
-    return {}
+      const exist = await Session.findOne({ _id: obj.sessionId })
+
+      if (exist) {
+        const filter = { _id: obj.sessionId };
+        const update = {
+          $set: {
+            movieId: new ObjectId(obj.movieId),
+            startTime: obj.startTime,
+            datetime: obj.datetime,
+            theaterId: new ObjectId(obj.theaterId),
+            roomInfo: new ObjectId(obj.roomInfo)
+          }
+        };
+        const options = { upsert: true };
+        const { modifiedCount } = await Session.updateOne(filter, update, options); 
+      } 
+    } else {
+      const newMovie = new Session(obj);
+      const temp = await newMovie.save();
+    }
+
+  });
+  
+
+    return 'succese'
   }
 }

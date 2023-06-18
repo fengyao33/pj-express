@@ -11,7 +11,8 @@ export interface ISession extends Document {
   roomInfo: Schema.Types.ObjectId,
   movieId: Schema.Types.ObjectId,
   ticketTypeIds: Schema.Types.ObjectId[],
-  seats: ISeat[]
+  seats: ISeat[],
+  startTime: Number
 }
 
 const sessionSchema = new Schema<ISession>({
@@ -46,7 +47,10 @@ const sessionSchema = new Schema<ISession>({
       type: seatSchema,
       required: [true, "seat欄位:seats 未輸入"]
     }
-  ]
+  ],
+  startTime: {
+    type: Number
+  }
 });
 
 const Session = model<ISession>("sessions", sessionSchema);

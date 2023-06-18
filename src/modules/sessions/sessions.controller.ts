@@ -3,6 +3,7 @@ import { SessionsService } from './services'
 import { ErrorHandler, handleErrorMiddleware } from '@middlewares/error_handler';
 import successHandler from '@middlewares/success_handler';
 import moment from 'moment'
+import _ from 'lodash'
 import { Types } from 'mongoose';
 
 export async function index(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -71,9 +72,9 @@ export async function getSessionList(req: Request, res: Response, next: NextFunc
 
 export async function postUpdateSession(req: Request, res: Response, next: NextFunction): Promise<void> {
   const session = new SessionsService()
-  let result = session.postSesstionsList(req.body)
-  res.json({
-    data: result
-  })
+
+  let state = await session.postSesstionsList(req.body)
+  
+  res.json({state})
 
 }
