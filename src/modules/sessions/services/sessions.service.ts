@@ -210,9 +210,10 @@ export class SessionsService {
           $lt: new Date(ed)
         },
         outOfTheatersTime: {
-          $lt: new Date(ed),
+          $gt: new Date(ed)
         }
       }
+
       let movies = await Movies.find(
         movieQy,
         {
@@ -222,6 +223,7 @@ export class SessionsService {
           movieCName: 1,
         }
       ) 
+
         let movieboxs = await Movies.find(
           { style: 'box' },
           { 
