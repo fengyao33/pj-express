@@ -2,7 +2,7 @@ import Theater, { ITheater } from '@models/theaters.model';
 
 export class AdmintheatersService {
   async findOne(id: any): Promise<ITheater | unknown> {
-    return await Theater.findById(id).select('name address mapUrl img phone description traffic enable');
+    return await Theater.findById(id).select('_id name address mapUrl img phone description traffic enable');
   }
 
   async findAll(): Promise<Object[]> {

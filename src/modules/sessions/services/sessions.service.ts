@@ -246,19 +246,19 @@ export class SessionsService {
 
     let updateKeys = Object.keys(sessionData)
 
-    const result = _.map(_.values(sessionData), obj => obj)
+    const result = await _.map(_.values(sessionData), obj => obj)
 
 
     await _.map(result, async (obj, i) => { 
 
-      const targetDate = new Date(updateKeys[i]);
-      await Session.deleteMany( { $expr: {
-        $and: [
-          { $eq: [{ $year: "$datetime" }, targetDate.getFullYear()] },
-          { $eq: [{ $month: "$datetime" }, targetDate.getMonth() + 1] },
-          { $eq: [{ $dayOfMonth: "$datetime" }, targetDate.getDate()] }
-        ]
-      }})
+      // const targetDate = new Date(updateKeys[i]);
+      // await Session.deleteMany( { $expr: {
+      //   $and: [
+      //     { $eq: [{ $year: "$datetime" }, targetDate.getFullYear()] },
+      //     { $eq: [{ $month: "$datetime" }, targetDate.getMonth() + 1] },
+      //     { $eq: [{ $dayOfMonth: "$datetime" }, targetDate.getDate()] }
+      //   ]
+      // }})
 
     if (obj && obj.length <= 0 ) return
 
@@ -297,4 +297,5 @@ export class SessionsService {
 
     return 'succese'
   }
+
 }
