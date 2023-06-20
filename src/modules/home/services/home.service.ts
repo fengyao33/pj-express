@@ -64,7 +64,6 @@ export class HomeService {
           $expr: {
             $and: [
               { $lt: [today, "$inTheatersTime"] }, 
-              { $lt: [today, "$outOfTheatersTime"] },
               { $ne: ["$style", "box"] }
             ]
           }
