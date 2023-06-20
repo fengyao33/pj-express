@@ -37,7 +37,7 @@ export class HomeService {
         $match: {
           $expr: {
             $and: [
-              { $lt: [today, "$inTheatersTime"] }, 
+              { $gt: [today, "$inTheatersTime"] }, 
               { $ne: ["$style", "box"] }
             ]
           }
@@ -122,6 +122,7 @@ export class HomeService {
     ])  
 
     let data = { activity, currentMovieList, futureMovieList, banner, focusMovie:focusMovie[0] }
+
 
 
     return data
