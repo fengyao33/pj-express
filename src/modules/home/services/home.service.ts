@@ -29,13 +29,17 @@ export class HomeService {
           movieEName: 1,
           inTheatersTime: 1,
           movieTime: 1,
-          rating: 1
+          rating: 1,
+          style: 1
         }
       },
       {
         $match: {
           $expr: {
-            $lt: [today, "$inTheatersTime"]
+            $and: [
+              { $lt: [today, "$inTheatersTime"] }, 
+              { $ne: ["$style", "box"] }
+            ]
           }
         }
       },
@@ -51,7 +55,8 @@ export class HomeService {
           movieEName: 1,
           inTheatersTime: 1,
           movieTime: 1,
-          rating: 1
+          rating: 1,
+          style: 1
         }
       },
       {
@@ -59,7 +64,8 @@ export class HomeService {
           $expr: {
             $and: [
               { $lt: [today, "$inTheatersTime"] }, 
-              { $lt: [today, "$outOfTheatersTime"] }
+              { $lt: [today, "$outOfTheatersTime"] },
+              { $ne: ["$style", "box"] }
             ]
           }
         }
@@ -73,7 +79,8 @@ export class HomeService {
         id: 1,
         videoUrl: 1,
         movieCName: 1,
-        synopsis: 1  
+        synopsis: 1,
+        style: 1  
         }
       },
       {
@@ -81,7 +88,8 @@ export class HomeService {
           $expr: {
             $and: [
               { $gt: [today, "$inTheatersTime"] }, 
-              { $gt: [today, "$outOfTheatersTime"] }
+              { $gt: [today, "$outOfTheatersTime"] },
+              { $ne: ["$style", "box"] }
             ]
           }
         }
@@ -96,6 +104,7 @@ export class HomeService {
             $and: [
               { $gt: [today, "$inTheatersTime"] },
               { $gt: [today, "$outOfTheatersTime"] },
+              { $ne: ["$style", "box"] }
             ]
           }
         }
@@ -107,6 +116,7 @@ export class HomeService {
           movieCName: 1,
           inTheatersTime: 1,
           outOfTheatersTime: 1,
+          style: 1
         }
       },
       { $limit: 10 }

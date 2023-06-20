@@ -207,11 +207,11 @@ export class SessionsService {
       let movieQy = {
         inTheatersTime: { 
           $gt: new Date(sd),
-          $lt: new Date(ed)
+          // $lt: new Date(ed)
         },
-        outOfTheatersTime: {
-          $gt: new Date(ed)
-        }
+        // outOfTheatersTime: {
+        //   $gt: new Date(ed)
+        // }
       }
 
       let movies = await Movies.find(
