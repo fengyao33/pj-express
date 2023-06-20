@@ -15,7 +15,8 @@ export class MoviesService {
         $gte: sdate,
         $lte: edate
       },
-      _id: id
+      style: { $ne: 'box' },
+      _id: id,
     }))
 
     if(errors) {
@@ -132,9 +133,12 @@ export class MoviesService {
                 time: {
                   $gte: new Date(new Date().setDate(new Date().getDate() - 10)),
                   $lte: new Date(new Date().setDate(new Date().getDate() + 10))
-                }
+                },
+                style: { $ne: 'box' },
               }
-            : {})
+            : {
+              style: { $ne: 'box' },
+            })
         })
           .skip(skip)
           .limit(parseInt(pageSize as string))
@@ -157,7 +161,7 @@ export class MoviesService {
       return  [ result, tableParams ]
 
     } else {
-      let [errors, result] = await on(Movies.find())
+      let [errors, result] = await on(Movies.find({style: { $ne: 'box' }}))
       
       if(errors) {
         throw errors;
