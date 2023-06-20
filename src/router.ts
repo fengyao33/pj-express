@@ -10,7 +10,8 @@ import AdminTheatersRouter from '@modules/admintheaters/admintheaters.routes';
 import AdminRoomsRouter from '@modules/adminrooms/adminrooms.routes';
 import AdminSeatsRouter from '@modules/adminseats/adminseats.routes';
 
-import SessionsRouter from '@modules/sessions/admin-sessions.routes';
+import AdSessionsRouter from '@modules/sessions/admin-sessions.routes';
+import SessionsRouter from '@modules/sessions/sessions.routes';
 import Statistics from '@modules/statistics/statistics.routes';
 import TheatersRouter from '@modules/theaters/theaters.routes';
 import BookingRouter from '@modules/booking/booking.routes';
@@ -35,7 +36,7 @@ router.use('/admin/statistics', Statistics);
 router.use('/admin/theaters', AdminTheatersRouter);
 router.use('/admin/rooms', AdminRoomsRouter);
 router.use('/admin/seats', AdminSeatsRouter);
-router.use('/admin/sessions', SessionsRouter);
+router.use('/admin/sessions', AdSessionsRouter);
 router.use('/sessions', SessionsRouter);
 router.use('/theaters', TheatersRouter);
 router.use('/booking', BookingRouter);
