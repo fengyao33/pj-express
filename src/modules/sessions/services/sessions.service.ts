@@ -207,11 +207,11 @@ export class SessionsService {
       let movieQy = {
         inTheatersTime: { 
           $gt: new Date(sd),
-          $lt: new Date(ed)
+          // $lt: new Date(ed)
         },
-        outOfTheatersTime: {
-          $gt: new Date(ed)
-        }
+        // outOfTheatersTime: {
+        //   $gt: new Date(ed)
+        // }
       }
 
       let movies = await Movies.find(
@@ -241,41 +241,61 @@ export class SessionsService {
   }
 
   async postSesstionsList(update): Promise<any> {
+
+    let { sessionData } = update
+
+    let updateKeys = Object.keys(sessionData)
+
+    const result = await _.map(_.values(sessionData), obj => obj)
+
+
+    await _.map(result, async (obj, i) => { 
+
+      // const targetDate = new Date(updateKeys[i]);
+      // await Session.deleteMany( { $expr: {
+      //   $and: [
+      //     { $eq: [{ $year: "$datetime" }, targetDate.getFullYear()] },
+      //     { $eq: [{ $month: "$datetime" }, targetDate.getMonth() + 1] },
+      //     { $eq: [{ $dayOfMonth: "$datetime" }, targetDate.getDate()] }
+      //   ]
+      // }})
+
+    if (obj && obj.length <= 0 ) return
+
+    await _.map(obj, async date => {
+ 
+
+      if (date.sessionId !== '') { 
   
-  const result = _.flatMap(update, (values) => {
-    return _.map(values, (obj) => {
-      return _.omit(obj, ['movieTime', 'imgUrl', 'movieCName']);
-    });
-  });
+        const exist = await Session.findOne({ _id: date.sessionId })
+  
+        if (exist) {
+          const filter = { _id: date.sessionId };
+          const update = {
+            $set: {
+              movieId: new ObjectId(date.movieId),
+              startTime: date.startTime,
+              datetime: date.datetime,
+              theaterId: new ObjectId(date.theaterId),
+              roomInfo: new ObjectId(date.roomInfo)
+            }
+          };
+          const options = { upsert: true };
+          const { modifiedCount } = await Session.updateOne(filter, update, options); 
+        } 
+      } else {
+        const newMovie = new Session(date);
+        const temp = await newMovie.save();
+      }
 
-  _.map(result, async obj => {
+    })
 
-    if (obj.sessionId !== '') { 
 
-      const exist = await Session.findOne({ _id: obj.sessionId })
-
-      if (exist) {
-        const filter = { _id: obj.sessionId };
-        const update = {
-          $set: {
-            movieId: new ObjectId(obj.movieId),
-            startTime: obj.startTime,
-            datetime: obj.datetime,
-            theaterId: new ObjectId(obj.theaterId),
-            roomInfo: new ObjectId(obj.roomInfo)
-          }
-        };
-        const options = { upsert: true };
-        const { modifiedCount } = await Session.updateOne(filter, update, options); 
-      } 
-    } else {
-      const newMovie = new Session(obj);
-      const temp = await newMovie.save();
-    }
 
   });
   
 
     return 'succese'
   }
+
 }
