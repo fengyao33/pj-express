@@ -267,14 +267,11 @@ export class SessionsService {
     await _.map(obj, async date => {
 
         const [err, { rooms }] = await on(Theaters.findOne({ _id: date.theaterId }))
-        let [rmErr, rm ] = rooms.map((room) => {
+        let [ rm ] = rooms.map((room) => {
           if (room._id.toString() === date.roomInfo) {
             return room
           }
         })
-        if(err || rmErr){
-          console.log('session error')
-        }
 
       if (date.sessionId !== '') { 
 
