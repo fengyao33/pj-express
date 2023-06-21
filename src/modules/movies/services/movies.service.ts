@@ -10,6 +10,7 @@ import Theater from '@models/theaters.model';
 
 export class MoviesService {
   async findOne(id: string, sdate: string, edate: string, getday: Date): Promise<Object> {
+
     let [errors, movie] = await on(Movies.findOne({
       premiere: {
         $gte: sdate,
@@ -58,6 +59,7 @@ export class MoviesService {
           // }
         })
           // .select('theaterId name address rooms datetime')      
+          .select('_id datetime')      
           .populate({
             path:'theaterId',
             // populate: {
@@ -81,7 +83,9 @@ export class MoviesService {
             message: 'get sessions with Theater Error'
           }
         }
-        groupTheater.push(theaters[0])
+        if(theaters && theaters.length <= 0) return []
+        groupTheater.push(...theaters)
+
       })  
     )
 
@@ -89,30 +93,24 @@ export class MoviesService {
     let theaterInfo: Object[]  = [] 
     let combinationTheater  = {}
 
-    groupTheater.map((item, i)=> {          
+    groupTheater.map( async (item, i)=> {       
       if(!item) return
-
-        item.theaterId.rooms.map( room => {
+        await item.theaterId.rooms.map( async room => {
+        room.sessionId = item._id 
         room.datetime = item.datetime
-      })
+        })
 
       combinationTheater = {   
         id: item.theaterId._id,
         name: item.theaterId.name,
         address:  item.theaterId.address,
-        datetime: getday,
-        timeInfo: item.theaterId.rooms
+        datetime: item.datetime,
+        timeInfo: item.theaterId.rooms,
       }
 
       theaterInfo.push(combinationTheater)
     })
 
-    // theater:[
-    //   {
-    //     datetime
-    //     // theaterInfo
-    //   }
-    // ]
 
     return {
       movie,
