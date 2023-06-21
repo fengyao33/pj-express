@@ -4,6 +4,7 @@ import Theaters from "@models/theaters.model"
 import Movies from "@models/movies.model"
 import { ObjectId } from 'mongodb'
 import _ from 'lodash'
+import on from "await-handler";
 import { Console } from "console"
 
 export class SessionsService {
@@ -248,6 +249,7 @@ export class SessionsService {
 
     const result = await _.map(_.values(sessionData), obj => obj)
 
+    const { ObjectId } = require('mongodb')
 
     await _.map(result, async (obj, i) => { 
 
@@ -263,10 +265,19 @@ export class SessionsService {
     if (obj && obj.length <= 0 ) return
 
     await _.map(obj, async date => {
- 
+
+        const [err, { rooms }] = await on(Theaters.findOne({ _id: date.theaterId }))
+        let [rmErr, rm ] = rooms.map((room) => {
+          if (room._id.toString() === date.roomInfo) {
+            return room
+          }
+        })
+        if(err || rmErr){
+          console.log('session error')
+        }
 
       if (date.sessionId !== '') { 
-  
+
         const exist = await Session.findOne({ _id: date.sessionId })
   
         if (exist) {
@@ -277,13 +288,17 @@ export class SessionsService {
               startTime: date.startTime,
               datetime: date.datetime,
               theaterId: new ObjectId(date.theaterId),
-              roomInfo: new ObjectId(date.roomInfo)
+              roomInfo: new ObjectId(date.roomInfo),
+              ticketTypeIds: rm.ticketTypeIds,
+              seats: rm.seats
             }
           };
           const options = { upsert: true };
           const { modifiedCount } = await Session.updateOne(filter, update, options); 
         } 
       } else {
+        date.ticketTypeIds = rm.ticketTypeIds,
+        date.seats = rm.seats
         const newMovie = new Session(date);
         const temp = await newMovie.save();
       }
