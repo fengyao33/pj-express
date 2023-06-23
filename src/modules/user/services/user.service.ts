@@ -56,13 +56,16 @@ export class UserauthService {
   }
 
   async getPurchaseRecord(authToken, page, limit): Promise<Object> {
+    //check page and limit 
+    if (page <= 0) return new ErrorHandler(400, 'page 必須 > 0');
+    if (limit <= 0) return new ErrorHandler(400, 'limit 必須 > 0');
     //get user email from JWT
     const decode = await jwt.verify(authToken, process.env.JWT_SECRET!, { complete: false }) as JwtPayload
     let user: any
     user = await User.findOne({ email: decode.email.toLowerCase() }).populate({
       path: "orderId", options: {
         sort: { orderDatetime: -1 },
-        skip: page, limit: limit,
+        skip: (page - 1) * limit, limit: limit,
         populate: { path: "sessionId", options: { populate: [{ path: "theaterId" }, { path: "movieId" }, { path: "ticketTypeIds" }] } }
       }
     })
@@ -91,6 +94,9 @@ export class UserauthService {
   }
 
   async getBonusRecord(authToken, page, limit): Promise<Object> {
+    //check page and limit
+    if (page <= 0) return new ErrorHandler(400, 'page 必須 > 0');
+    if (limit <= 0) return new ErrorHandler(400, 'limit 必須 > 0');
     //get user email from JWT
     const decode = await jwt.verify(authToken, process.env.JWT_SECRET!, { complete: false }) as JwtPayload
     const user: any = await User.findOne({ email: decode.email.toLowerCase() }).populate({
@@ -118,7 +124,7 @@ export class UserauthService {
     const endDateOfNextYear = new Date(new Date().getFullYear() + 1, 11, 31)
 
     return {
-      orders: returnOrders.filter((order, index) => index >= page && index < page + limit),
+      orders: returnOrders.filter((order, index) => index >= (page - 1) * limit && index < page * limit),
       bonus: getBonus(returnOrders, endDateOfNextYear),
       expire: {
         bonus: getBonus(returnOrders, endDateOfThisYear),
