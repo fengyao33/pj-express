@@ -37,7 +37,7 @@ export class HomeService {
         $match: {
           $expr: {
             $and: [
-              { $gt: [today, "$inTheatersTime"] }, 
+              { $lt: [today, "$inTheatersTime"] }, 
               { $ne: ["$style", "box"] }
             ]
           }
@@ -63,7 +63,7 @@ export class HomeService {
         $match: {
           $expr: {
             $and: [
-              { $lt: [today, "$inTheatersTime"] }, 
+              { $gt: [today, "$inTheatersTime"] }, 
               { $ne: ["$style", "box"] }
             ]
           }
