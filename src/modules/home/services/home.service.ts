@@ -102,7 +102,7 @@ export class HomeService {
           $expr: {
             $and: [
               { $gt: [today, "$inTheatersTime"] },
-              { $gt: [today, "$outOfTheatersTime"] },
+              // { $gt: [today, "$outOfTheatersTime"] },
               { $ne: ["$style", "box"] }
             ]
           }
