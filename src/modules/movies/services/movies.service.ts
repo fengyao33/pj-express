@@ -47,6 +47,7 @@ export class MoviesService {
 
     await Promise.all(
       theaterIdArr.map( async (tid, i) => {
+
         let [theaterErr, theaters] = await on(Session.find({
           theaterId: tid,
           datetime: {
@@ -84,7 +85,8 @@ export class MoviesService {
           }
         }
         if(theaters && theaters.length <= 0) return []
-        groupTheater.push(...theaters)
+
+        groupTheater.push(theaters[0])
 
       })  
     )
@@ -92,6 +94,7 @@ export class MoviesService {
     // Organize
     let theaterInfo: Object[]  = [] 
     let combinationTheater  = {}
+    console.log(888, groupTheater)
 
     groupTheater.map( async (item, i)=> {       
       if(!item) return
@@ -110,7 +113,6 @@ export class MoviesService {
 
       theaterInfo.push(combinationTheater)
     })
-
 
     return {
       movie,
